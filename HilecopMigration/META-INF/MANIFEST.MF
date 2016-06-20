@@ -1,6 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: HilecopMigration
-Bundle-SymbolicName: HilecopMigration
+Bundle-SymbolicName: HilecopMigration;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.11.2",
+ org.eclipse.emf.ecore.xmi;bundle-version="2.11.1",
+ fr.demar.hilecop.component;bundle-version="1.0.0",
+ fr.demar.hilecopNEW.component;bundle-version="0.1.0"
