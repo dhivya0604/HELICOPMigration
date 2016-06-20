@@ -12,65 +12,60 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-
 public class FileExplorer{
-	
-	public ArrayList<File> liste_fichiers;
-	
+
+	private ArrayList<File> liste_fichiers;
+
 	public FileExplorer()
 	{
 		liste_fichiers = new ArrayList<File>();
 	}
-	
+
 	/***parcours de repertoire***/
-	public void parcours(String path)
+	public ArrayList<File> parcours(String path)
 	{	
-	File file=new File (path);
+		File file=new File (path);
 		File[] Lrep=file.listFiles();
 		int size=Lrep.length;
-			for(int i=0;i<size;i++)
-			{
+		for(int i=0;i<size;i++)
+		{
 			if(Lrep[i].isDirectory()==true)
-				{
-					parcours(Lrep[i].getAbsolutePath());
-						int j=0;
-						 File[] Lfiles=Lrep[i].listFiles();
-						 if(Lfiles!=null){
-							 
-							 for(j=0;j<Lfiles.length;j++){
-							 {if(Lfiles[j].getName().contains(".project")==true)
-							 { if(test_projet_hilecop(Lfiles[j]))
-							 	{
-								 //test de contenu
-								 //System.out.println("repertoire:  "+Lrep[i].getName());
-							 	
-								 liste_fichiers.add(Lrep[i]);
-							 	for(int k=0;k<Lfiles.length;k++){
-							 		if(Lfiles[k].getName().endsWith(".hilecopcomponent") && !(Lfiles[k].getName().equals(".metadata") )){
-							 			liste_fichiers.add(Lfiles[k]);
-							 		}	
-							 	
-							 	}
-							 
-							 	}
-							 	}
-							
-						 }
+			{
+				parcours(Lrep[i].getAbsolutePath());
+				int j=0;
+				File[] Lfiles=Lrep[i].listFiles();
+				if(Lfiles!=null){
+
+					for(j=0;j<Lfiles.length;j++){
+						if(Lfiles[j].getName().contains(".project")==true){
+							if(test_projet_hilecop(Lfiles[j])){
+								//test de contenu
+								//System.out.println("repertoire:  "+Lrep[i].getName());
+
+								liste_fichiers.add(Lrep[i]);
+								for(int k=0;k<Lfiles.length;k++){
+									if(Lfiles[k].getName().endsWith(".hilecopcomponent") && !(Lfiles[k].getName().equals(".metadata") )){
+										liste_fichiers.add(Lfiles[k]);	
+									}
+								}
+							}
+						}
 					}
 				}
-							
-						 			
+			}
 		}
-						 }
+		return liste_fichiers;
 	}
+	
+	
 	/*public void parcours(String path)
 	{
-		
+
 	File file=new File (path);
 		File[] Lrep=file.listFiles();
-		
+
 	//	DefaultMutableTreeNode noeud;
-	
+
 			for(int i=0;i<Lrep.length;i++)
 			{//noeud= new DefaultMutableTreeNode(Lrep[i].getName());
 
@@ -81,20 +76,20 @@ public class FileExplorer{
 						parcours(Lrep[i].getAbsolutePath());
 						//DefaultMutableTreeNode noeud1=new DefaultMutableTreeNode(Lrep[i].getName());
 						//noeud.add(noeud);
-					
+
 						int j=0;
 						 File[] Lfiles=Lrep[i].listFiles();
 						 if(Lfiles!=null){
-							 
+
 							 for(j=0;j<Lfiles.length;j++){
 							 {if(Lfiles[j].getName().contains(".project")==true)
 							 	{
 								 	System.out.println("fichier"+Lfiles[j].getName());
 								 	//noeud.add(new DefaultMutableTreeNode(Lfiles[j].getName()));
-								 	
+
 							 	}
 							// }
-							 
+
 						 }
 					}
 				}
@@ -109,19 +104,20 @@ public class FileExplorer{
 			}
 		}}
 	}*/
-	
+
 	private boolean test_projet_hilecop(File file) {
 		// TODO Auto-generated method stub
 		BufferedReader reader;
 		try
 		{
+			@SuppressWarnings("resource")
 			InputStream is=new FileInputStream(file);
 			reader=new BufferedReader(new InputStreamReader(is));
-			
+
 			String line=reader.readLine();
 			while(line!=null)
 			{
-				
+
 				if(line.contains("fr.demar.hilecop.component.editor.HilecopNature"))
 				{
 					return true;
@@ -140,8 +136,8 @@ public class FileExplorer{
 	{
 		for(int d=0;d<v.size();d++)
 		{
-				System.out.println(v.get(d));
-		
+			System.out.println(v.get(d));
+
 		}
 	}
 
