@@ -1,3 +1,6 @@
+/**
+ * @author Dhivya
+ */
 package interfacegraphique;
 
 import java.io.BufferedReader;

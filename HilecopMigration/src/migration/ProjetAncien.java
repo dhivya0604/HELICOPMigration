@@ -12,8 +12,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import hilecopComponent.HilecopComponentDesignFile;
 
 public class ProjetAncien {
+	
 	/**
-	 * 	ouvrire l'ancien : hilecopcomponent
+	 * ouvrire le fichier hilecopcomponent de l'ancien projet
+	 * @param path
+	 * @return
 	 */
 	public HilecopComponentDesignFile read(String path){
 		ResourceSet ancienResourceSet = new ResourceSetImpl();

@@ -21,6 +21,12 @@ public class ProjetNouveau {
 	private Resource newres;
 	private HilecopRoot newroot;
 
+	/**
+	 * constructor; create un nouveau fichier root
+	 * @param path
+	 * @param name
+	 * @throws IOException
+	 */
 	public ProjetNouveau(String path, String name) throws IOException{
 		resourceSet = new ResourceSetImpl();
 		resourceSet.getPackageRegistry().put(root.RootPackage.eNS_URI,root.RootPackage.eINSTANCE);
@@ -33,11 +39,14 @@ public class ProjetNouveau {
 	}
 
 	/**
-	 *  cr¨¦er un nouveau composant avec le m¨ºme nom
-	 *  cr¨¦er ResetPort, ClockPort et ClockEnablePort et les ajouter dans le composant
+	 * cr¨¦er un nouveau composant avec le m¨ºme nom de l'ancien
+	 * @param name
 	 */
 	public void createRoot(String name){
 		newroot = RootFactory.eINSTANCE.createHilecopRoot(name);
+		
+		//cr¨¦er ResetPort, ClockPort et ClockEnablePort et les ajouter dans le composant
+		
 		ResetPort resetport = FieldFactory.eINSTANCE.createResetPort();
 		ClockPort clockport = FieldFactory.eINSTANCE.createClockPort();
 		ClockEnablePort clockenable = FieldFactory.eINSTANCE.createClockEnablePort();
@@ -47,6 +56,10 @@ public class ProjetNouveau {
 		newroot.getComponent().setClockEnablePort(clockenable);
 	}
 
+	/**
+	 * la migration
+	 * @param designfile : hilecopcomponent de l'ancien projet
+	 */
 	public void migration(HilecopComponentDesignFile designfile){
 		System.out.println(newroot.getComponent().eContents().size());
 
