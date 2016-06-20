@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import hilecopComponent.HilecopComponentDesignFile;
 
 public class MigrationDuProjet {
+	
+	/*
+	 * necessaire?
+	 */
 	/**
 	 * faire la migration de l'ancien projet vers le nouveau
 	 * @param ancienfichiers : list de fichiers .hilecopcomponent de l'ancien projet

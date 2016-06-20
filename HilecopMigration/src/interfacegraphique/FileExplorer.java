@@ -21,7 +21,12 @@ public class FileExplorer{
 		liste_fichiers = new ArrayList<File>();
 	}
 
-	/***parcours de repertoire***/
+	
+	/**
+	 *parcours de repertoire
+	 * @param path
+	 * @return
+	 */
 	public ArrayList<File> parcours(String path)
 	{	
 		File file=new File (path);
@@ -35,7 +40,6 @@ public class FileExplorer{
 				int j=0;
 				File[] Lfiles=Lrep[i].listFiles();
 				if(Lfiles!=null){
-
 					for(j=0;j<Lfiles.length;j++){
 						if(Lfiles[j].getName().contains(".project")==true){
 							if(test_projet_hilecop(Lfiles[j])){
@@ -45,6 +49,7 @@ public class FileExplorer{
 								liste_fichiers.add(Lrep[i]);
 								for(int k=0;k<Lfiles.length;k++){
 									if(Lfiles[k].getName().endsWith(".hilecopcomponent") && !(Lfiles[k].getName().equals(".metadata") )){
+										System.out.println(Lfiles[k].getAbsolutePath());
 										liste_fichiers.add(Lfiles[k]);	
 									}
 								}
@@ -106,7 +111,6 @@ public class FileExplorer{
 	}*/
 
 	private boolean test_projet_hilecop(File file) {
-		// TODO Auto-generated method stub
 		BufferedReader reader;
 		try
 		{
