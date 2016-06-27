@@ -41,7 +41,6 @@ public class ProjetNouveau {
 	/**
 	 * cr¨¦er un nouveau composant avec le m¨ºme nom de l'ancien
 	 * @param name
-	 * @todo nom pas besoin?
 	 */
 	public void createRoot(String name){
 		newroot = RootFactory.eINSTANCE.createHilecopRoot(name);
@@ -62,7 +61,24 @@ public class ProjetNouveau {
 	 * @param designfile : hilecopcomponent de l'ancien projet
 	 */
 	public void migration(HilecopComponentDesignFile designfile){
-		
+		System.out.println(newroot.getComponent().eContents().size());
+
+		System.out.println(designfile.getHilecopComponent().getComponentBehaviour().getPorts());
+		System.out.println(designfile.getHilecopComponent().getPorts());
+		System.out.println(designfile.getHilecopComponent().getGenerics());
+
+		System.out.println("All:"+ designfile.getHilecopComponent().eContents().size());
+		System.out.println("All:"+ designfile.getHilecopComponent().eContents());
+		//System.out.println("Port:"+ designfile.getHilecopComponent().getPorts().size());
+		//System.out.println("Generic:"+ designfile.getHilecopComponent().getGenerics().size());
+		//System.out.println("Signal:"+ designfile.getHilecopComponent().getSignals().size());
+		System.out.println("Field:"+ designfile.getHilecopComponent().getPublicFields().size());
+		System.out.println("Field:"+ designfile.getHilecopComponent().getPublicFields());
+		System.out.println(designfile.getHilecopComponent().getComponentBehaviour());
+
+		System.out.println(designfile.getHilecopComponent().getDescriptorName());
+		System.out.println(designfile.getHilecopComponent().getName());
+		System.out.println(designfile.getDesignFileName());
 	}
 
 
