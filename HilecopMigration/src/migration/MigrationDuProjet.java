@@ -10,8 +10,8 @@ import hilecopComponent.HilecopComponentDesignFile;
 
 public class MigrationDuProjet {
 	
-	/*
-	 * necessaire?
+	/**
+	 * @TODO necessaire?
 	 */
 	/**
 	 * faire la migration de l'ancien projet vers le nouveau
