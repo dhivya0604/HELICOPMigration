@@ -247,17 +247,9 @@ public class Interface extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(null,"new project location is Empty");
 		}
 		else{
-			MigrationDuProjet migtool = new MigrationDuProjet();
-			for(int i=0;i<listeFichier.size();i++){
-				if(listeFichier.get(i).getName().endsWith(".hilecopcomponent")){
-					String locate = text2.getText()+"\\"+listeFichier.get(i).getParentFile().getName();
-					File f1=new File(locate);
-					f1.mkdir();
-					String fichierpath = listeFichier.get(i).getAbsolutePath();
-					System.out.println(fichierpath);
-					migtool.migrationComposant(fichierpath, locate);
-				}
-			}
+			String locate = text2.getText();
+			MigrationDuProjet migprojet = new MigrationDuProjet(listeFichier,locate);
+			migprojet.migrationHILECOP();
 			JOptionPane.showMessageDialog(null,"migration is done!");
 		}
 	}
