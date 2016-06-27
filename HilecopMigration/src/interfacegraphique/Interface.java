@@ -3,6 +3,8 @@
  */
 package interfacegraphique;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -19,6 +21,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 import migration.MigrationDuProjet;
 
@@ -35,13 +44,14 @@ public class Interface extends JFrame implements ActionListener {
 	private JButton b1=new JButton("Browse");
 	private JButton b2=new JButton("Browse");
 	private JButton migrer=new JButton("Migrate");
-	//private JButton explorer=new JButton("FileExplorer");
+	private JTextPane jt;
+	private JScrollPane scroll;
+	
 	private ArrayList<File> listeFichier;
-
+	
 	FileExplorer f = new FileExplorer();
-
-	JOptionPane jp=new JOptionPane();
-
+	ArrayList lclone;
+	
 	/**
 	 * constructor
 	 */
@@ -93,6 +103,14 @@ public class Interface extends JFrame implements ActionListener {
 					e1.printStackTrace();
 				}}
 		});
+		
+		 jt=new JTextPane();
+		jt.setBounds(50,200,200,200);
+		
+		 scroll=new JScrollPane(jt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setBounds(150, 252, 400, 300);
+		scroll.setVisible(false);
+		frame.getContentPane().add(scroll);
 
 		frame.setVisible(true);
 	}
@@ -133,36 +151,95 @@ public class Interface extends JFrame implements ActionListener {
 
 	/***Actions of buttons b1 and b2***/
 	public void actionPerformed(ActionEvent e){
+		
+		
+
 		int input = 0;
+		
 		fc.setCurrentDirectory(new java.io.File("C:/"));
 		fc.setDialogTitle("Choose a file");
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		if (fc.showOpenDialog(b1) == JFileChooser.APPROVE_OPTION){
+		int result = fc.showOpenDialog(b1);
+		if ( result == JFileChooser.APPROVE_OPTION){
 			input=JOptionPane.showConfirmDialog(null, fc.getSelectedFile().getAbsolutePath(),"confirm", JOptionPane.YES_NO_OPTION);
-		}
-
-		if(input==0){
-			if(e.getSource()==b1){
-				b1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				setText1(fc.getSelectedFile().getAbsolutePath());
-				frame.setSize(600, 600);
-				JTextArea jt=new JTextArea(10,10);
-				jt.setLineWrap(true);
-				jt.setWrapStyleWord(true);
-				jt.setBounds(150,250,300,300);
-				JScrollPane scroll=new JScrollPane(jt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-				frame.getContentPane().add(jt);
-				frame.getContentPane().add(scroll);
-				listeFichier=f.parcours(backToSlash(text1.getText()));
-				AddTextJpanel(jt, listeFichier);
-				frame.setVisible(true);
+		
+			if(input==0){
+				if(e.getSource()==b1){
+					
+					
+					setText1(fc.getSelectedFile().getAbsolutePath());
+					
+					
+					// attente du curseur durant l'exploration des dossiers
+					 
+					Thread thread=new Thread()
+					{public void run()
+						{
+								//b1.setEnabled(false);
+								for (Component c : frame.getContentPane().getComponents()) c.setEnabled(false);
+								frame.getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+								f = new FileExplorer();
+								f.parcours(backToSlash(text1.getText()));
+								
+								System.out.println("Ruuning...");
+							
+						}
+						
+					};
+					//debut du thread
+					thread.start();
+					
+					//Fin de thread
+					try {
+						thread.join();
+						//b1.setEnabled(true);
+						for (Component c : frame.getContentPane().getComponents()) c.setEnabled(true);
+						frame.getContentPane().setCursor(null);
+						System.out.println("done!");
+						
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					
+					
+					frame.setSize(600, 600);
+					scroll.setVisible(true);
+					jt.removeAll();
+					jt.validate();
+					jt.repaint();
+					jt=new JTextPane();
+					
+					jt.setBounds(50,200,200,200);
+					JScrollPane scroll=new JScrollPane(jt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					scroll.setBounds(150, 252, 400, 300);
+					
+					frame.getContentPane().add(scroll);
+					
+					
+					lclone=(ArrayList)f.liste_fichiers.clone();
+					
+					
+						AddTextJpanel(jt, lclone);
+					frame.setVisible(true);
+				}
+				else{
+					setText2(fc.getSelectedFile().getAbsolutePath());
+				}
 			}
-			else{
-				setText2(fc.getSelectedFile().getAbsolutePath());
-			}
+			else System.out.println("CANCEL");
+		
 		}
-	}
+		else {
+			System.out.println("Cancel browse");
+		}
+		
+				
+		
+	}//end actionperformed
+	
+	
 
 	/**
 	 * action for button "migrate"
@@ -198,32 +275,53 @@ public class Interface extends JFrame implements ActionListener {
 		return s.replace("\\", "/");
 	}
 
-	/*	public String SlashToDoubleSlash(String s) {
-		StringBuilder sb=new StringBuilder(s);
-		for(int i=0;i<s.length();i++)
+
+/**
+ * Ajout de la contenue de ArrayList au JTextPane
+ * @param jta
+ * @param f
+ */
+	public void AddTextJpanel(JTextPane jta, ArrayList<File>f){	
+	
+		//System.out.println("times clicked in methode "+clicked);
+		if(f.isEmpty())
 		{
-			if(s.charAt(i)=='\\')
-			{
-				sb.append("\\");
-			}
-
+			appendToPane(jta,"Expected file is not found in this Directory",Color.BLACK);
 		}
-		return sb.toString();
-	}*/
-
-
-	/***ajout de la contenu de ArrayList JTextArea****/
-	public void AddTextJpanel(JTextArea jta, ArrayList<File>f){	
+		else
+		{
 		for(int i=0;i<f.size();i++)
 		{
 			if(f.get(i).isDirectory())
 			{
-				jta.append("[projet]"+f.get(i).getName()+"\n");
+				appendToPane(jta,"[projet]: "+f.get(i).getName()+"\n",Color.RED);
 			}
 			else
-			{jta.append("\t"+f.get(i).getName()+"\n");}
+			{appendToPane(jta,"\t"+f.get(i).getName()+"\n",Color.blue);}
 
 		}
+		}
+		
 	}
-}
+	
+	/**
+	 *Ajoute couleur aux lignes choisies
+	 * @param tp
+	 * @param msg
+	 * @param c
+	 */
+	private void appendToPane(JTextPane tp, String msg, Color c)
+    {
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+
+      
+       aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+
+        int len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
+        tp.setCharacterAttributes(aset, false);
+        tp.replaceSelection(msg);
+    }//fin de la methode appendToPane
+}//fin de la classe
 
