@@ -19,12 +19,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
@@ -50,7 +47,6 @@ public class Interface extends JFrame implements ActionListener {
 	private ArrayList<File> listeFichier;
 	
 	FileExplorer f = new FileExplorer();
-	ArrayList lclone;
 	
 	/**
 	 * constructor
@@ -217,11 +213,9 @@ public class Interface extends JFrame implements ActionListener {
 					
 					frame.getContentPane().add(scroll);
 					
+					listeFichier=f.parcours(backToSlash(text1.getText()));
+					AddTextJpanel(jt, listeFichier);
 					
-					lclone=(ArrayList)f.liste_fichiers.clone();
-					
-					
-						AddTextJpanel(jt, lclone);
 					frame.setVisible(true);
 				}
 				else{
@@ -253,17 +247,9 @@ public class Interface extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(null,"new project location is Empty");
 		}
 		else{
-			MigrationDuProjet migtool = new MigrationDuProjet();
-			for(int i=0;i<listeFichier.size();i++){
-				if(listeFichier.get(i).getName().endsWith(".hilecopcomponent")){
-					String locate = text2.getText()+"\\"+listeFichier.get(i).getParentFile().getName();
-					File f1=new File(locate);
-					f1.mkdir();
-					String fichierpath = listeFichier.get(i).getAbsolutePath();
-					System.out.println(fichierpath);
-					migtool.migrationComposant(fichierpath, locate);
-				}
-			}
+			String locate = text2.getText();
+			MigrationDuProjet migprojet = new MigrationDuProjet(listeFichier,locate);
+			migprojet.migrationHILECOP();
 			JOptionPane.showMessageDialog(null,"migration is done!");
 		}
 	}
