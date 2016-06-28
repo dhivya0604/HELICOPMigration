@@ -211,7 +211,7 @@ public class Interface extends JFrame implements ActionListener {
 					JScrollPane scroll=new JScrollPane(jt,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 					scroll.setBounds(150, 252, 400, 300);
 					
-					frame.getContentPane().add(scroll);
+frame.getContentPane().add(scroll);
 					
 					listeFichier=f.parcours(backToSlash(text1.getText()));
 					AddTextJpanel(jt, listeFichier);
