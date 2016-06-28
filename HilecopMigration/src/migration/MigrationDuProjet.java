@@ -3,6 +3,7 @@
  */
 package migration;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,30 +11,31 @@ import hilecopComponent.HilecopComponentDesignFile;
 
 public class MigrationDuProjet {
 	
-	/*
-	 * necessaire?
-	 */
-	/**
-	 * faire la migration de l'ancien projet vers le nouveau
-	 * @param ancienfichiers : list de fichiers .hilecopcomponent de l'ancien projet
-	 * @param locate : chemin du nouveau projet
-	 * @throws IOException
-	 */
-	public void migrationHILECOP(ArrayList<String> ancienfichiers, String locate) throws IOException{
-		int nb = ancienfichiers.size();
-		for(int i=0;i<nb;i++){
-			String path = ancienfichiers.get(i);
-			migrationComposant(path,locate);
-		}
+	private ArrayList<File> listeFichier;
+	private String locate;
+	
+	public MigrationDuProjet(ArrayList<File> lf, String lo){
+		listeFichier = lf;
+		locate = lo;
 	}
 	
 	/**
-	 * la migration pour chaque composant
-	 * @param path1
-	 * @param path2
+	 * la migration du projet(s)
 	 * @throws IOException
 	 */
-	public void migrationComposant(String path1, String path2) throws IOException{
+	public void migrationHILECOP() throws IOException{
+		for(int i=0;i<listeFichier.size();i++){
+			if(listeFichier.get(i).getName().endsWith(".hilecopcomponent")){
+				String path = locate + "\\"+listeFichier.get(i).getParentFile().getName();
+				File f1=new File(path);
+				f1.mkdir();
+				String fichierpath = listeFichier.get(i).getAbsolutePath();
+				migrationComposant(fichierpath, path);
+			}
+		}
+	}
+	
+	private void migrationComposant(String path1, String path2) throws IOException{
 		ProjetAncien ancien = new ProjetAncien();
 		HilecopComponentDesignFile ancienroot = ancien.read(path1);
 		
@@ -41,6 +43,7 @@ public class MigrationDuProjet {
 
 		ProjetNouveau nouveau = new ProjetNouveau(path2, name);
 		nouveau.createRoot(name);
+		nouveau.migration(ancienroot);
 		nouveau.save();
 	}
 }

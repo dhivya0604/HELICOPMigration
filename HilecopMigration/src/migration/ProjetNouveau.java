@@ -13,7 +13,12 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import field.*;
+import hilecopComponent.Constant;
+import hilecopComponent.Field;
+import hilecopComponent.Generic;
 import hilecopComponent.HilecopComponentDesignFile;
+import hilecopComponent.Port;
+import hilecopComponent.Signal;
 import root.*;
 
 public class ProjetNouveau {
@@ -61,25 +66,49 @@ public class ProjetNouveau {
 	 * @param designfile : hilecopcomponent de l'ancien projet
 	 */
 	public void migration(HilecopComponentDesignFile designfile){
-		System.out.println(newroot.getComponent().eContents().size());
-
-		System.out.println(designfile.getHilecopComponent().getComponentBehaviour().getPorts());
-		System.out.println(designfile.getHilecopComponent().getPorts());
-		System.out.println(designfile.getHilecopComponent().getGenerics());
-
-		System.out.println("All:"+ designfile.getHilecopComponent().eContents().size());
-		System.out.println("All:"+ designfile.getHilecopComponent().eContents());
-		//System.out.println("Port:"+ designfile.getHilecopComponent().getPorts().size());
-		//System.out.println("Generic:"+ designfile.getHilecopComponent().getGenerics().size());
-		//System.out.println("Signal:"+ designfile.getHilecopComponent().getSignals().size());
-		System.out.println("Field:"+ designfile.getHilecopComponent().getPublicFields().size());
-		System.out.println("Field:"+ designfile.getHilecopComponent().getPublicFields());
-		System.out.println(designfile.getHilecopComponent().getComponentBehaviour());
-
-		System.out.println(designfile.getHilecopComponent().getDescriptorName());
-		System.out.println(designfile.getHilecopComponent().getName());
-		System.out.println(designfile.getDesignFileName());
+		MigrationDuComposant migtool = new MigrationDuComposant(newroot);
+		
+		/*
+		 * Field
+		 */
+		int nbPort = designfile.getHilecopComponent().getPorts().size();
+		System.out.println("Number of Port :" + nbPort);
+		for(int i=0;i<nbPort;i++){
+			Port port = designfile.getHilecopComponent().getPorts().get(i);
+			migtool.migratePort(port);
+			System.out.println("Port " + (i+1) +" is migrated");
+		}
+		
+		int nbSignal = designfile.getHilecopComponent().getSignals().size();
+		System.out.println("Number of Signal :" + nbSignal);
+		for(int i=0;i<nbSignal;i++){
+			Signal signal = designfile.getHilecopComponent().getSignals().get(i);
+			migtool.migrateSignal(signal);
+			System.out.println("Signal " + (i+1) +" is migrated");
+		}
+		
+		int nbGeneric = designfile.getHilecopComponent().getGenerics().size();
+		System.out.println("Number of Generic :" + nbGeneric);
+		for(int i=0;i<nbGeneric;i++){
+			Generic generic = designfile.getHilecopComponent().getGenerics().get(i);
+			migtool.migrateGeneric(generic);
+			System.out.println("Generic " + (i+1) +" is migrated");
+		}
+		
+		int nbpf = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().size();
+		int nbConstant = 0;
+		for(int i=0;i<nbpf;i++){
+			Field field = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
+			//System.out.println(field.getClass());
+			if(field.getClass().toString()=="Constant"){
+				nbConstant = nbConstant+1;
+				Constant constant = (Constant)designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
+				migtool.migrateConstant(constant);
+			}
+		}
+		System.out.println("Number of Constant :"+nbConstant);
 	}
+		
 
 
 	/**
