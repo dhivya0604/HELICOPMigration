@@ -36,14 +36,14 @@ public class MigrationDuProjet {
 	}
 	
 	private void migrationComposant(String path1, String path2) throws IOException{
-		ProjetAncien ancien = new ProjetAncien();
-		HilecopComponentDesignFile ancienroot = ancien.read(path1);
+		ProjetAncien ancien = new ProjetAncien(path1);
+		HilecopComponentDesignFile ancienroot = ancien.getRoot();
 		
 		String name = ancienroot.getDesignFileName();
 
 		ProjetNouveau nouveau = new ProjetNouveau(path2, name);
 		nouveau.createRoot(name);
-		nouveau.migration(ancienroot);
+		nouveau.migration(ancien);
 		nouveau.save();
 	}
 }

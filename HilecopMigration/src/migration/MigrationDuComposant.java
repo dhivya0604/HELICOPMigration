@@ -2,6 +2,7 @@ package migration;
 
 import field.*;
 import hilecopComponent.*;
+import petriNet.PetriNetFactory;
 import root.HilecopRoot;
 
 public class MigrationDuComposant {
@@ -60,11 +61,43 @@ public class MigrationDuComposant {
 		nouveau.getComponent().getFields().add(newconstant);
 		
 	}
+	/*
+	public void migrateConnection(Connection connection){
+		field.Connection newconnection = FieldFactory.eINSTANCE.createConnection();
+		
+		//@TODO connection only has getID 
+		
+		//newconnection.setName(connection.get);
+		//nouveau.getComponent().getFields().add(newconnection);
+		
+	}
+	*/
+	/**
+	 * 
+	 * @param place
+	 */
+	public void migratePlace(Place place){
+		petriNet.Place newplace = PetriNetFactory.eINSTANCE.createPlace();
+		newplace.setName(place.getName());
+		newplace.setMarking(Integer.parseInt(place.getMarkupExpression()));
+		nouveau.getComponent().getPNStructureObjects().add(newplace);
+	}
 	
+	public void migrateRefPlace(RefPlace refplace){
+		petriNet.RefPlace newrefplace = PetriNetFactory.eINSTANCE.createRefPlace();
+		newrefplace.setName(refplace.getName());
+		convertRefPlaceMode(newrefplace, refplace);
+		nouveau.getComponent().getPNStructureObjects().add(newrefplace);
+	}
 	
-	
-	
-	
+	public void migrateTransition(Transition transition){
+		petriNet.Transition newtransition = PetriNetFactory.eINSTANCE.createTransition();
+		newtransition.setName(transition.getName());
+		//Time time = 
+		//newtransition.setTime(transition.getTemporalBehaviour());
+		nouveau.getComponent().getPNStructureObjects().add(newtransition);
+	}
+		
 	/**
 	 * Donner mode du port selon mode de l'ancien port
 	 * @param newport
@@ -85,6 +118,21 @@ public class MigrationDuComposant {
 		}
 		/**
 		 * TODO gerer exception
+		 */
+	}
+	
+	public void convertRefPlaceMode(petriNet.RefPlace newrefplace, RefPlace refplace){
+		if(refplace.getMode().getValue()==0){
+			newrefplace.setMode(PortMode.IN);
+		}
+		if(refplace.getMode().getValue()==1){
+			newrefplace.setMode(PortMode.OUT);
+		}
+		if(refplace.getMode().getValue()==2){
+			newrefplace.setMode(PortMode.INOUT);
+		}
+		/**
+		 * TODO peut = ConvertPortMode?
 		 */
 	}
 	

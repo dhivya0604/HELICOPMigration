@@ -17,7 +17,9 @@ import hilecopComponent.Constant;
 import hilecopComponent.Field;
 import hilecopComponent.Generic;
 import hilecopComponent.HilecopComponentDesignFile;
+import hilecopComponent.Place;
 import hilecopComponent.Port;
+import hilecopComponent.RefPlace;
 import hilecopComponent.Signal;
 import root.*;
 
@@ -49,9 +51,9 @@ public class ProjetNouveau {
 	 */
 	public void createRoot(String name){
 		newroot = RootFactory.eINSTANCE.createHilecopRoot(name);
-		
+
 		//cr¨¦er ResetPort, ClockPort et ClockEnablePort et les ajouter dans le composant
-		
+
 		ResetPort resetport = FieldFactory.eINSTANCE.createResetPort();
 		ClockPort clockport = FieldFactory.eINSTANCE.createClockPort();
 		ClockEnablePort clockenable = FieldFactory.eINSTANCE.createClockEnablePort();
@@ -65,8 +67,9 @@ public class ProjetNouveau {
 	 * la migration
 	 * @param designfile : hilecopcomponent de l'ancien projet
 	 */
-	public void migration(HilecopComponentDesignFile designfile){
+	public void migration(ProjetAncien ancien){
 		MigrationDuComposant migtool = new MigrationDuComposant(newroot);
+		HilecopComponentDesignFile designfile = ancien.getRoot();
 		
 		/*
 		 * Field
@@ -78,7 +81,7 @@ public class ProjetNouveau {
 			migtool.migratePort(port);
 			System.out.println("Port " + (i+1) +" is migrated");
 		}
-		
+
 		int nbSignal = designfile.getHilecopComponent().getSignals().size();
 		System.out.println("Number of Signal :" + nbSignal);
 		for(int i=0;i<nbSignal;i++){
@@ -86,7 +89,7 @@ public class ProjetNouveau {
 			migtool.migrateSignal(signal);
 			System.out.println("Signal " + (i+1) +" is migrated");
 		}
-		
+
 		int nbGeneric = designfile.getHilecopComponent().getGenerics().size();
 		System.out.println("Number of Generic :" + nbGeneric);
 		for(int i=0;i<nbGeneric;i++){
@@ -107,18 +110,38 @@ public class ProjetNouveau {
 			}
 		}
 		System.out.println("Number of Constant :"+nbConstant);
-	}
+
 		
-
-
-	/**
-	 *  sauvegarder le fichier
-	 * @throws IOException 
-	 */
-	public void save() throws IOException{
-		newres.getContents().add(newroot);
-		newres.save(null);
+		/*
+		 * PN
+		 */
+		
+		int nbPlace = ancien.getPlace().size();
+		System.out.println("Number of Place : " + nbPlace);
+		for(int i=0;i<nbPlace;i++){
+			Place place = ancien.getPlace().get(i);
+			migtool.migratePlace(place);
+			System.out.println("Place " + (i+1) +" is migrated");
+		}
+		
+		int nbRefPlace = designfile.getHilecopComponent().getRefPlaces().size();
+		System.out.println("Number of Generic :" + nbRefPlace);
+		for(int i=0;i<nbRefPlace;i++){
+			RefPlace refplace = designfile.getHilecopComponent().getRefPlaces().get(i);
+			migtool.migrateRefPlace(refplace);
+			System.out.println("RefPlace " + (i+1) +" is migrated");
+		}
 	}
+
+
+/**
+ *  sauvegarder le fichier
+ * @throws IOException 
+ */
+public void save() throws IOException{
+	newres.getContents().add(newroot);
+	newres.save(null);
+}
 }
 
 
