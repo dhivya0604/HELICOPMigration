@@ -84,8 +84,8 @@ public class ProjetNouveau {
 	}
 	
 	public void migration(ProjetAncien ancien){
-		MigrationDuComposant migtool = new MigrationDuComposant(this);
-		migtool.migeration(ancien);
+		MigrationDuComposant migtool = new MigrationDuComposant(this,ancien);
+		migtool.migeration();
 	}
 
 

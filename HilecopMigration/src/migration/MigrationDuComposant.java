@@ -7,6 +7,7 @@ import org.eclipse.emf.common.util.EList;
 import field.*;
 import hilecopComponent.*;
 import hilecopComponent.Field;
+import petriNet.Node;
 import petriNet.PetriNetFactory;
 import root.HilecopRoot;
 import script.ScriptFactory;
@@ -19,14 +20,17 @@ public class MigrationDuComposant {
 
 	private ProjetNouveau newprojet;
 	private HilecopRoot newroot;
+	private ProjetAncien origiprojet;
+	private HilecopComponentDesignFile designfile;
 
-	public MigrationDuComposant(ProjetNouveau nouveau){
+	public MigrationDuComposant(ProjetNouveau nouveau,ProjetAncien ancien){
 		newprojet = nouveau;
 		newroot = nouveau.getRoot();
+		origiprojet = ancien;
+		designfile = ancien.getRoot();
 	}
 
-	public void migeration(ProjetAncien ancien){
-		HilecopComponentDesignFile designfile = ancien.getRoot();
+	public void migeration(){
 		/*
 		 * Field
 		 */
@@ -72,10 +76,10 @@ public class MigrationDuComposant {
 		 * PN
 		 */
 
-		int nbPlace = ancien.getPlace().size();
+		int nbPlace = origiprojet.getPlace().size();
 		System.out.println("Number of Place : " + nbPlace);
 		for(int i=0;i<nbPlace;i++){
-			Place place = ancien.getPlace().get(i);
+			Place place = origiprojet.getPlace().get(i);
 			newroot.getComponent().getPNStructureObjects().add(convertPlace(place));
 			System.out.println("Place " + (i+1) +" is migrated");
 		}
@@ -88,10 +92,10 @@ public class MigrationDuComposant {
 			System.out.println("RefPlace " + (i+1) +" is migrated");
 		}
 		
-		int nbTransition = ancien.getTransition().size();
+		int nbTransition = origiprojet.getTransition().size();
 		System.out.println("Number of Transition : " + nbTransition);
 		for(int i=0;i<nbTransition;i++){
-			Transition Transition = ancien.getTransition().get(i);
+			Transition Transition = origiprojet.getTransition().get(i);
 			newroot.getComponent().getPNStructureObjects().add(convertTransition(Transition));
 			System.out.println("Transition " + (i+1) +" is migrated");
 		}
@@ -104,6 +108,34 @@ public class MigrationDuComposant {
 			System.out.println("RefTransition " + (i+1) +" is migrated");
 		}
 		
+		int nbBasicArc = origiprojet.getBasicArc().size();
+		System.out.println("Number of BasicArc : " + nbBasicArc);
+		for(int i=0;i<nbBasicArc;i++){
+			BasicArc BasicArc = origiprojet.getBasicArc().get(i);
+			newroot.getComponent().getPNStructureObjects().add(convertBasicArc(BasicArc));
+			System.out.println("BasicArc " + (i+1) +" is migrated");
+		}
+		int nbTestArc = origiprojet.getTestArc().size();
+		System.out.println("Number of TestArc : " + nbTestArc);
+		for(int i=0;i<nbTestArc;i++){
+			TestArc TestArc = origiprojet.getTestArc().get(i);
+			newroot.getComponent().getPNStructureObjects().add(convertTestArc(TestArc));
+			System.out.println("TestArc " + (i+1) +" is migrated");
+		}
+		int nbInhibitorArc = origiprojet.getInhibitorArc().size();
+		System.out.println("Number of InhibitorArc : " + nbInhibitorArc);
+		for(int i=0;i<nbInhibitorArc;i++){
+			InhibitorArc InhibitorArc = origiprojet.getInhibitorArc().get(i);
+			newroot.getComponent().getPNStructureObjects().add(convertInhibitorArc(InhibitorArc));
+			System.out.println("InhibitorArc " + (i+1) +" is migrated");
+		}
+		int nbFusionArc = origiprojet.getFusionArc().size();
+		System.out.println("Number of FusionArc : " + nbFusionArc);
+		for(int i=0;i<nbFusionArc;i++){
+			FusionArc FusionArc = origiprojet.getFusionArc().get(i);
+			newroot.getComponent().getPNStructureObjects().add(convertFusionArc(FusionArc));
+			System.out.println("FusionArc " + (i+1) +" is migrated");
+		}
 	}
 
 
@@ -171,6 +203,7 @@ public class MigrationDuComposant {
 		/**
 		 * @TODO chaque fois "add to liste Action dans nouveau root?"
 		 */
+		
 		return newplace;
 	}
 
@@ -215,7 +248,7 @@ public class MigrationDuComposant {
 				Time time =  (Time) listeInterpretation.get(i);
 				newtransition.setTime(convertTime(time));
 				/**
-				 * TODO s'il y plusieurs times dans l'ancien?
+				 * TODO s'il y plusieurs times dans l'oldprojet?
 				 */
 			}
 		}
@@ -275,8 +308,39 @@ public class MigrationDuComposant {
 		newtime.setScript_time(getVHDLTime(time.getDynamicTime()));
 		return newtime;
 	}
+	
+	private petriNet.BasicArc convertBasicArc(BasicArc barc){
+		petriNet.BasicArc newBarc = PetriNetFactory.eINSTANCE.createBasicArc();
+		newBarc.setName(barc.getName());
+		newBarc.setRuleExpression(barc.getRuleExpression());
+		setNode(newBarc,barc);
+		return newBarc;
+	}
+	
+	private petriNet.TestArc convertTestArc(TestArc tarc){
+		petriNet.TestArc newTarc = PetriNetFactory.eINSTANCE.createTestArc();
+		newTarc.setName(tarc.getName());
+		newTarc.setRuleExpression(tarc.getRuleExpression());
+		setNode(newTarc,tarc);
+		return newTarc;
+	}
+	
+	private petriNet.InhibitorArc convertInhibitorArc(InhibitorArc iarc){
+		petriNet.InhibitorArc newIarc = PetriNetFactory.eINSTANCE.createInhibitorArc();
+		newIarc.setName(iarc.getName());
+		newIarc.setRuleExpression(iarc.getRuleExpression());
+		setNode(newIarc,iarc);
+		return newIarc;
+	}
+	
+	private petriNet.FusionArc convertFusionArc(FusionArc farc){
+		petriNet.FusionArc newFarc = PetriNetFactory.eINSTANCE.createFusionArc();
+		newFarc.setName(farc.getName());
+		setNode(newFarc,farc);
+		return newFarc;
+	}
 	/**
-	 * Donner mode du port selon mode de l'ancien port
+	 * Donner mode du port selon mode de l'oldprojet port
 	 * @param newport
 	 * @param port
 	 */
@@ -386,4 +450,31 @@ public class MigrationDuComposant {
 		vhdlTime.setContent(content);
 		return vhdlTime;
 	}
+	
+	private void setNode(petriNet.Arc newArc, Arc arc){
+		String nameSource = arc.getSourceNode().getName();
+		String nameTarget = arc.getTargetNode().getName();
+		ArrayList<Place> listePlace = origiprojet.getPlace();
+		ArrayList<Transition> listeTransition = origiprojet.getTransition();
+		/**
+		 * TODO besoin Ref ?
+		 */
+		for(int i=0;i<listePlace.size();i++){
+			if(listePlace.get(i).getName().equals(nameSource)){
+				newArc.setSourceNode((Node) listePlace.get(i));
+			}
+			if(listePlace.get(i).getName().equals(nameTarget)){
+				newArc.setTargetNode((Node) listePlace.get(i));
+			}
+		}
+		for(int i=0;i<listeTransition.size();i++){
+			if(listeTransition.get(i).getName().equals(nameSource)){
+				newArc.setSourceNode((Node) listeTransition.get(i));
+			}
+			if(listeTransition.get(i).getName().equals(nameTarget)){
+				newArc.setTargetNode((Node) listeTransition.get(i));
+			}
+		}
+	}
+	
 }
