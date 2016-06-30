@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import hilecopComponent.HilecopComponentDesignFile;
-
 public class MigrationDuProjet {
 	
 	private ArrayList<File> listeFichier;
@@ -37,9 +35,7 @@ public class MigrationDuProjet {
 	
 	private void migrationComposant(String path1, String path2) throws IOException{
 		ProjetAncien ancien = new ProjetAncien(path1);
-		HilecopComponentDesignFile ancienroot = ancien.getRoot();
-		
-		String name = ancienroot.getDesignFileName();
+		String name = ancien.getRoot().getDesignFileName();
 
 		ProjetNouveau nouveau = new ProjetNouveau(path2, name);
 		nouveau.createRoot(name);

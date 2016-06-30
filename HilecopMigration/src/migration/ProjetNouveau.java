@@ -5,7 +5,9 @@ package migration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -13,14 +15,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import field.*;
-import hilecopComponent.Constant;
-import hilecopComponent.Field;
-import hilecopComponent.Generic;
-import hilecopComponent.HilecopComponentDesignFile;
-import hilecopComponent.Place;
-import hilecopComponent.Port;
-import hilecopComponent.RefPlace;
-import hilecopComponent.Signal;
 import root.*;
 
 public class ProjetNouveau {
@@ -62,86 +56,47 @@ public class ProjetNouveau {
 		newroot.getComponent().setClockPort(clockport);
 		newroot.getComponent().setClockEnablePort(clockenable);
 	}
+	
+	public HilecopRoot getRoot(){
+		return newroot;
+	}
 
-	/**
-	 * la migration
-	 * @param designfile : hilecopcomponent de l'ancien projet
-	 */
-	public void migration(ProjetAncien ancien){
-		MigrationDuComposant migtool = new MigrationDuComposant(newroot);
-		HilecopComponentDesignFile designfile = ancien.getRoot();
-		
-		/*
-		 * Field
-		 */
-		int nbPort = designfile.getHilecopComponent().getPorts().size();
-		System.out.println("Number of Port :" + nbPort);
-		for(int i=0;i<nbPort;i++){
-			Port port = designfile.getHilecopComponent().getPorts().get(i);
-			migtool.migratePort(port);
-			System.out.println("Port " + (i+1) +" is migrated");
-		}
-
-		int nbSignal = designfile.getHilecopComponent().getSignals().size();
-		System.out.println("Number of Signal :" + nbSignal);
-		for(int i=0;i<nbSignal;i++){
-			Signal signal = designfile.getHilecopComponent().getSignals().get(i);
-			migtool.migrateSignal(signal);
-			System.out.println("Signal " + (i+1) +" is migrated");
-		}
-
-		int nbGeneric = designfile.getHilecopComponent().getGenerics().size();
-		System.out.println("Number of Generic :" + nbGeneric);
-		for(int i=0;i<nbGeneric;i++){
-			Generic generic = designfile.getHilecopComponent().getGenerics().get(i);
-			migtool.migrateGeneric(generic);
-			System.out.println("Generic " + (i+1) +" is migrated");
-		}
-		
-		int nbpf = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().size();
-		int nbConstant = 0;
-		for(int i=0;i<nbpf;i++){
-			Field field = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
-			//System.out.println(field.getClass());
-			if(field.getClass().toString()=="Constant"){
-				nbConstant = nbConstant+1;
-				Constant constant = (Constant)designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
-				migtool.migrateConstant(constant);
+	public ArrayList<petriNet.Place> getPlace(){
+		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
+		ArrayList<petriNet.Place> listeplace = new ArrayList<petriNet.Place>();
+		for(int i=0;i<pn.size();i++){
+			if(pn.get(i).getClass().toString().equals("class hilecopComponent.impl.PlaceImpl")){
+				listeplace.add((petriNet.Place) pn.get(i));
 			}
 		}
-		System.out.println("Number of Constant :"+nbConstant);
+		return listeplace;
+	}
 
-		
-		/*
-		 * PN
-		 */
-		
-		int nbPlace = ancien.getPlace().size();
-		System.out.println("Number of Place : " + nbPlace);
-		for(int i=0;i<nbPlace;i++){
-			Place place = ancien.getPlace().get(i);
-			migtool.migratePlace(place);
-			System.out.println("Place " + (i+1) +" is migrated");
+	public ArrayList<petriNet.Transition> getTransition(){
+		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
+		ArrayList<petriNet.Transition> listeTransition = new ArrayList<petriNet.Transition>();
+		for(int i=0;i<pn.size();i++){
+			if(pn.get(i).getClass().toString().equals("class hilecopComponent.impl.TransitionImpl")){
+				listeTransition.add((petriNet.Transition) pn.get(i));
+			}
 		}
-		
-		int nbRefPlace = designfile.getHilecopComponent().getRefPlaces().size();
-		System.out.println("Number of Generic :" + nbRefPlace);
-		for(int i=0;i<nbRefPlace;i++){
-			RefPlace refplace = designfile.getHilecopComponent().getRefPlaces().get(i);
-			migtool.migrateRefPlace(refplace);
-			System.out.println("RefPlace " + (i+1) +" is migrated");
-		}
+		return listeTransition;
+	}
+	
+	public void migration(ProjetAncien ancien){
+		MigrationDuComposant migtool = new MigrationDuComposant(this);
+		migtool.migeration(ancien);
 	}
 
 
-/**
- *  sauvegarder le fichier
- * @throws IOException 
- */
-public void save() throws IOException{
-	newres.getContents().add(newroot);
-	newres.save(null);
-}
+	/**
+	 *  sauvegarder le fichier
+	 * @throws IOException 
+	 */
+	public void save() throws IOException{
+		newres.getContents().add(newroot);
+		newres.save(null);
+	}
 }
 
 
