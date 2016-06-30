@@ -2,11 +2,18 @@ package migration;
 
 import java.util.ArrayList;
 
+import org.eclipse.emf.common.util.EList;
+
 import field.*;
 import hilecopComponent.*;
 import hilecopComponent.Field;
 import petriNet.PetriNetFactory;
 import root.HilecopRoot;
+import script.ScriptFactory;
+import script.VHDLAction;
+import script.VHDLCondition;
+import script.VHDLFunction;
+import script.VHDLTime;
 
 public class MigrationDuComposant {
 
@@ -96,6 +103,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertRefTransition(refTransition));
 			System.out.println("RefTransition " + (i+1) +" is migrated");
 		}
+		
 	}
 
 
@@ -109,12 +117,12 @@ public class MigrationDuComposant {
 		//newroot.getComponent().getFields().add(newconnection);
 
 	}
-	 */
+	*/
 
 	private VHDLPort convertPort(Port port){
 		VHDLPort newport = FieldFactory.eINSTANCE.createVHDLPort(); 
 		newport.setName(port.getName());
-		convertPortMode(newport, port);
+		setPortMode(newport, port);
 		newport.setDefaultValue(port.getDefaultValue());
 		newport.setType(port.getType());
 		return newport;
@@ -148,13 +156,28 @@ public class MigrationDuComposant {
 		petriNet.Place newplace = PetriNetFactory.eINSTANCE.createPlace();
 		newplace.setName(place.getName());
 		newplace.setMarking(Integer.parseInt(place.getMarkupExpression()));
+		//add actions
+		EList<PNEntityInterpretation> listeInterpretation = place.getInterpretation();
+		for(int i=0;i<listeInterpretation.size();i++){
+			if(listeInterpretation.get(i).getClass().equals("class hilecopComponent.impl.ActionImpl"))
+			/**
+			 * @TODO ifelse?
+			 */
+			{
+				Action action =  (Action) listeInterpretation.get(i);
+				newplace.getActions().add(convertAction(action));
+			}
+		}
+		/**
+		 * @TODO chaque fois "add to liste Action dans nouveau root?"
+		 */
 		return newplace;
 	}
 
 	private petriNet.RefPlace convertRefPlace(RefPlace refplace){
 		petriNet.RefPlace newrefplace = PetriNetFactory.eINSTANCE.createRefPlace();
 		newrefplace.setName(refplace.getName());
-		convertRefPlaceMode(newrefplace, refplace);
+		setRefPlaceMode(newrefplace, refplace);
 		//check refplace.place exist ou pas
 		ArrayList<petriNet.Place> listeplace = newprojet.getPlace();
 		String placename = refplace.getPlace().getName();
@@ -174,15 +197,35 @@ public class MigrationDuComposant {
 	private petriNet.Transition convertTransition(Transition transition){
 		petriNet.Transition newtransition = PetriNetFactory.eINSTANCE.createTransition();
 		newtransition.setName(transition.getName());
-		//Time time = 
-		//newtransition.setTime(transition.getTemporalBehaviour());
+		EList<PNEntityInterpretation> listeInterpretation = transition.getInterpretation();
+		for(int i=0;i<listeInterpretation.size();i++){
+			String interpretationtype = listeInterpretation.get(i).getClass().toString();
+			if(interpretationtype.equals("class hilecopComponent.impl.ConditionImpl"))
+			{
+				Condition condition =  (Condition) listeInterpretation.get(i);
+				newtransition.getConditions().add(convertCondition(condition));
+			}
+			if(interpretationtype.equals("class hilecopComponent.impl.FunctionImpl"))
+			{
+				Function function =  (Function) listeInterpretation.get(i);
+				newtransition.getFunctions().add(convertFunction(function));
+			}
+			if(interpretationtype.equals("class hilecopComponent.impl.TimeImpl"))
+			{
+				Time time =  (Time) listeInterpretation.get(i);
+				newtransition.setTime(convertTime(time));
+				/**
+				 * TODO s'il y plusieurs times dans l'ancien?
+				 */
+			}
+		}
 		return newtransition;
 	}
 
 	private petriNet.RefTransition convertRefTransition(RefTransition reftransition){
 		petriNet.RefTransition newreftransition = PetriNetFactory.eINSTANCE.createRefTransition();
 		newreftransition.setName(reftransition.getName());
-		convertRefTransitionMode(newreftransition, reftransition);		
+		setRefTransitionMode(newreftransition, reftransition);		
 		//check reftransition.transition exist ou pas
 		ArrayList<petriNet.Transition> listetransition = newprojet.getTransition();
 		String transitionname = reftransition.getTransition().getName();
@@ -198,14 +241,48 @@ public class MigrationDuComposant {
 		}
 		return newreftransition;
 	}
+	
+	private petriNet.Action convertAction(Action action){
+		petriNet.Action newaction = PetriNetFactory.eINSTANCE.createAction();
+		newaction.setName(action.getName());
+		newaction.setScript_action(getVHDLAction(action.getAction()));
+		return newaction;
+	}
+	
+	private petriNet.Condition convertCondition(Condition condition){
+		petriNet.Condition newcondition = PetriNetFactory.eINSTANCE.createCondition();
+		newcondition.setName(condition.getName());
+		newcondition.setScript_condition(getVHDLCondition(condition.getCondition()));
+		setOperator(newcondition,condition);
+		return newcondition;
+	}
+
+	private petriNet.Function convertFunction(Function function){
+		petriNet.Function newfunction = PetriNetFactory.eINSTANCE.createFunction();
+		newfunction.setName(function.getName());
+		newfunction.setScript_function(getVHDLFunction(function.getFunction()));
+		return newfunction;
+	}
+	
+	private petriNet.Time convertTime(Time time){
+		petriNet.Time newtime = PetriNetFactory.eINSTANCE.createTime();
+		newtime.setTmin(time.getTmin());
+		newtime.setTmax(time.getTmax());
+		newtime.setDescription(time.getDescription());
+		/**
+		 * TODO time.getDynamicTime()!=null ?
+		 */
+		newtime.setScript_time(getVHDLTime(time.getDynamicTime()));
+		return newtime;
+	}
 	/**
 	 * Donner mode du port selon mode de l'ancien port
 	 * @param newport
 	 * @param port
 	 */
-	private void convertPortMode(VHDLPort newport, Port port){
+	private void setPortMode(VHDLPort newport, Port port){
 		/**
-		 * @TODO comparer les autres champs?
+		 * TODO comparer les autres champs?
 		 */
 		if(port.getMode().getValue()==0){
 			newport.setMode(PortMode.IN);
@@ -221,7 +298,7 @@ public class MigrationDuComposant {
 		 */
 	}
 
-	private void convertRefPlaceMode(petriNet.RefPlace newrefplace, RefPlace refplace){
+	private void setRefPlaceMode(petriNet.RefPlace newrefplace, RefPlace refplace){
 		if(refplace.getMode().getValue()==0){
 			newrefplace.setMode(PortMode.IN);
 		}
@@ -236,11 +313,11 @@ public class MigrationDuComposant {
 		 */
 	}
 	/**
-	 * @TODO comment utiliser un method pour port/place/transition
+	 * TODO comment utiliser un method pour port/place/transition
 	 * @param newrefTransition
 	 * @param refTransition
 	 */
-	private void convertRefTransitionMode(petriNet.RefTransition newrefTransition, RefTransition refTransition){
+	private void setRefTransitionMode(petriNet.RefTransition newrefTransition, RefTransition refTransition){
 		if(refTransition.getMode().getValue()==0){
 			newrefTransition.setMode(PortMode.IN);
 		}
@@ -251,5 +328,62 @@ public class MigrationDuComposant {
 			newrefTransition.setMode(PortMode.INOUT);
 		}
 	}
+	
+	private void setOperator(petriNet.Condition newcondition, Condition condition){
+		if(condition.getOperator().getValue()==0){
+			newcondition.setOperator(petriNet.Operator.ID);
+		}
+		if(condition.getOperator().getValue()==1){
+			newcondition.setOperator(petriNet.Operator.NOT);
+		}
+	}
+	
+	/**
+	 * TODO utilise un method pour les 3
+	 * @param pnaction
+	 * @return
+	 */
+	private VHDLAction getVHDLAction(PNAction pnaction){
+		VHDLAction vhdlAction = ScriptFactory.eINSTANCE.createVHDLAction();
+		vhdlAction.setName(pnaction.getName());
+		String script = pnaction.getBehaviourInterpretation().getScript();
+		int begin = script.indexOf("is begin");
+		int fin = script.lastIndexOf("end");
+		String content = script.substring(begin+8, fin);
+		vhdlAction.setContent(content);
+		return vhdlAction;
+	}
 
+	private VHDLCondition getVHDLCondition(PNCondition pnCondition){
+		VHDLCondition vhdlCondition = ScriptFactory.eINSTANCE.createVHDLCondition();
+		vhdlCondition.setName(pnCondition.getName());
+		String script = pnCondition.getBehaviourInterpretation().getScript();
+		int begin = script.indexOf("is begin");
+		int fin = script.lastIndexOf("end");
+		String content = script.substring(begin+8, fin);
+		vhdlCondition.setContent(content);
+		return vhdlCondition;
+	}
+	
+	private VHDLFunction getVHDLFunction(PNFunction pnFunction){
+		VHDLFunction vhdlFunction = ScriptFactory.eINSTANCE.createVHDLFunction();
+		vhdlFunction.setName(pnFunction.getName());
+		String script = pnFunction.getBehaviourInterpretation().getScript();
+		int begin = script.indexOf("is begin");
+		int fin = script.lastIndexOf("end");
+		String content = script.substring(begin+8, fin);
+		vhdlFunction.setContent(content);
+		return vhdlFunction;
+	}
+	
+	private VHDLTime getVHDLTime(PNTime pntime){
+		VHDLTime vhdlTime = ScriptFactory.eINSTANCE.createVHDLTime();
+		vhdlTime.setName(pntime.getName());
+		String script = pntime.getBehaviourInterpretation().getScript();
+		int begin = script.indexOf("is begin");
+		int fin = script.lastIndexOf("end");
+		String content = script.substring(begin+8, fin);
+		vhdlTime.setContent(content);
+		return vhdlTime;
+	}
 }
