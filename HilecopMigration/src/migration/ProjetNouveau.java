@@ -16,6 +16,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import field.*;
 import root.*;
+import script.VHDLAction;
+import script.VHDLCondition;
+import script.VHDLElement;
+import script.VHDLFunction;
+import script.VHDLTime;
 
 public class ProjetNouveau {
 	private ResourceSet resourceSet;
@@ -61,7 +66,50 @@ public class ProjetNouveau {
 		return newroot;
 	}
 
-	public ArrayList<petriNet.Place> getPlace(){
+	public ArrayList<VHDLAction> getVHDLActions(){
+		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
+		ArrayList<VHDLAction> listeAction = new ArrayList<VHDLAction>();
+		for(int i=0;i<listeVHDL.size();i++){
+			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.PNActionImpl")){
+				listeAction.add((VHDLAction) listeVHDL.get(i));
+			}
+		}
+		return listeAction;
+	}
+	
+	public ArrayList<VHDLCondition> getVHDLConditions(){
+		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
+		ArrayList<VHDLCondition> listeCondition = new ArrayList<VHDLCondition>();
+		for(int i=0;i<listeVHDL.size();i++){
+			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLConditionImpl")){
+				listeCondition.add((VHDLCondition) listeVHDL.get(i));
+			}
+		}
+		return listeCondition;
+	}
+	
+	public ArrayList<VHDLFunction> getVHDLFunctions(){
+		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
+		ArrayList<VHDLFunction> listeFunction = new ArrayList<VHDLFunction>();
+		for(int i=0;i<listeVHDL.size();i++){
+			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLFunctionImpl")){
+				listeFunction.add((VHDLFunction) listeVHDL.get(i));
+			}
+		}
+		return listeFunction;
+	}
+	
+	public ArrayList<VHDLTime> getVHDLTimes(){
+		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
+		ArrayList<VHDLTime> listeTime = new ArrayList<VHDLTime>();
+		for(int i=0;i<listeVHDL.size();i++){
+			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLTimeImpl")){
+				listeTime.add((VHDLTime) listeVHDL.get(i));
+			}
+		}
+		return listeTime;
+	}
+	public ArrayList<petriNet.Place> getPlaces(){
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Place> listeplace = new ArrayList<petriNet.Place>();
 		for(int i=0;i<pn.size();i++){
@@ -72,7 +120,7 @@ public class ProjetNouveau {
 		return listeplace;
 	}
 
-	public ArrayList<petriNet.Transition> getTransition(){
+	public ArrayList<petriNet.Transition> getTransitions(){
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Transition> listeTransition = new ArrayList<petriNet.Transition>();
 		for(int i=0;i<pn.size();i++){
@@ -81,11 +129,6 @@ public class ProjetNouveau {
 			}
 		}
 		return listeTransition;
-	}
-	
-	public void migration(ProjetAncien ancien){
-		MigrationDuComposant migtool = new MigrationDuComposant(this,ancien);
-		migtool.migeration();
 	}
 
 

@@ -39,7 +39,8 @@ public class MigrationDuProjet {
 
 		ProjetNouveau nouveau = new ProjetNouveau(path2, name);
 		nouveau.createRoot(name);
-		nouveau.migration(ancien);
+		MigrationDuComposant migtool = new MigrationDuComposant(nouveau,ancien);
+		migtool.migeration();
 		nouveau.save();
 	}
 }

@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import org.eclipse.emf.common.util.EList;
 
 import field.*;
+import field.FusionConnection;
+import field.SimpleConnection;
 import hilecopComponent.*;
-import hilecopComponent.Field;
-import petriNet.Node;
+import hilecopComponent.Connection;
 import petriNet.PetriNetFactory;
 import root.HilecopRoot;
+import root.RootFactory;
 import script.ScriptFactory;
 import script.VHDLAction;
 import script.VHDLCondition;
+import script.VHDLElement;
 import script.VHDLFunction;
 import script.VHDLTime;
 
@@ -31,65 +34,100 @@ public class MigrationDuComposant {
 	}
 
 	public void migeration(){
-		/*
-		 * Field
-		 */
-		int nbPort = designfile.getHilecopComponent().getPorts().size();
-		System.out.println("Number of Port :" + nbPort);
-		for(int i=0;i<nbPort;i++){
-			Port port = designfile.getHilecopComponent().getPorts().get(i);
+		System.out.println("Fiche "+newroot.getComponent().getName());
+		this.migrationField();
+		this.migrationConnection();
+		this.migrationVHDL();
+		this.migrationBasicNode();
+		this.migrationRefNode();
+		this.migrationArc();
+		this.migrationInstance();
+		System.out.println("");
+	}
+
+
+	public void migrationField(){
+		EList<Port> listePort = designfile.getHilecopComponent().getPorts();
+		System.out.println("Number of Port :" + listePort.size());
+		for(int i=0;i<listePort.size();i++){
+			Port port = listePort.get(i);
 			newroot.getComponent().getFields().add(convertPort(port));
 			System.out.println("Port " + (i+1) +" is migrated");
 		}
 
-		int nbSignal = designfile.getHilecopComponent().getSignals().size();
-		System.out.println("Number of Signal :" + nbSignal);
-		for(int i=0;i<nbSignal;i++){
-			Signal signal = designfile.getHilecopComponent().getSignals().get(i);
+		EList<Signal> listeSignal = designfile.getHilecopComponent().getSignals();
+		System.out.println("Number of Signal :" + listeSignal.size());
+		for(int i=0;i<listeSignal.size();i++){
+			Signal signal = listeSignal.get(i);
 			newroot.getComponent().getFields().add(convertSignal(signal));
 			System.out.println("Signal " + (i+1) +" is migrated");
 		}
 
-		int nbGeneric = designfile.getHilecopComponent().getGenerics().size();
-		System.out.println("Number of Generic :" + nbGeneric);
-		for(int i=0;i<nbGeneric;i++){
-			Generic generic = designfile.getHilecopComponent().getGenerics().get(i);
+		EList<Generic> listeGeneric = designfile.getHilecopComponent().getGenerics();
+		System.out.println("Number of Generic :" + listeGeneric.size());
+		for(int i=0;i<listeGeneric.size();i++){
+			Generic generic = listeGeneric.get(i);
 			newroot.getComponent().getFields().add(convertGeneric(generic));
 			System.out.println("Generic " + (i+1) +" is migrated");
 		}
 
-		int nbpf = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().size();
-		int nbConstant = 0;
-		for(int i=0;i<nbpf;i++){
-			Field field = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
-			//System.out.println(field.getClass());
-			if(field.getClass().toString()=="Constant"){
-				nbConstant = nbConstant+1;
-				Constant constant = (Constant)designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
-				newroot.getComponent().getFields().add(convertConstant(constant));
+		ArrayList<Constant> listeConstant = origiprojet.getConstant();
+		System.out.println("Number of Constant :" + listeConstant.size());
+		for(int i=0;i<listeGeneric.size();i++){
+			Constant constant = listeConstant.get(i);
+			newroot.getComponent().getFields().add(convertConstant(constant));
+			System.out.println("Generic " + (i+1) +" is migrated");
+		}
+	}
+	
+	public void migrationConnection(){
+		EList<Connection> listeconnection = designfile.getHilecopComponent().getComponentBehaviour().getConnections();
+		System.out.println("Number of Connection : "+listeconnection.size());
+		for(int i=0;i<listeconnection.size();i++){
+			if(listeconnection.get(i).getClass().toString().equals("class hilecopComponent.impl.SimpleConnectionImpl")){
+				hilecopComponent.SimpleConnection sconnection = (hilecopComponent.SimpleConnection) listeconnection.get(i);
+				newroot.getComponent().getConnections().add(convertSimpleConnection(sconnection));
+			}
+			if(listeconnection.get(i).getClass().toString().equals("class hilecopComponent.impl.FusionConnectionImpl")){
+				hilecopComponent.FusionConnection sconnection = (hilecopComponent.FusionConnection) listeconnection.get(i);
+				newroot.getComponent().getConnections().add(convertFusionConnection(sconnection));
 			}
 		}
-		System.out.println("Number of Constant :"+nbConstant);
-
-
-		/*
-		 * PN
-		 */
-
+	}
+	
+	public void migrationVHDL(){
+		EList<PNAction> listeVHDLAction = origiprojet.getPNAction();
+		System.out.println("Number of PNAction : "+listeVHDLAction.size());
+		for(int i=0;i<listeVHDLAction.size();i++){
+			newroot.getComponent().getVHDLElements().add(convertVHDLAction(listeVHDLAction.get(i)));
+		}
+		
+		EList<PNFunction> listeVHDLFunction = origiprojet.getPNFunction();
+		System.out.println("Number of PNFunction : "+listeVHDLFunction.size());
+		for(int i=0;i<listeVHDLFunction.size();i++){
+			newroot.getComponent().getVHDLElements().add(convertVHDLFunction(listeVHDLFunction.get(i)));
+		}
+		
+		EList<PNCondition> listeVHDLCondition = origiprojet.getPNCondition();
+		System.out.println("Number of PNCondition : "+listeVHDLCondition.size());
+		for(int i=0;i<listeVHDLCondition.size();i++){
+			newroot.getComponent().getVHDLElements().add(convertVHDLCondition(listeVHDLCondition.get(i)));
+		}
+		
+		EList<PNTime> listeVHDLTime = origiprojet.getPNTime();
+		System.out.println("Number of PNTime : "+listeVHDLTime.size());
+		for(int i=0;i<listeVHDLTime.size();i++){
+			newroot.getComponent().getVHDLElements().add(convertVHDLTime(listeVHDLTime.get(i)));
+		}
+	}
+	
+	public void migrationBasicNode(){
 		int nbPlace = origiprojet.getPlace().size();
 		System.out.println("Number of Place : " + nbPlace);
 		for(int i=0;i<nbPlace;i++){
 			Place place = origiprojet.getPlace().get(i);
 			newroot.getComponent().getPNStructureObjects().add(convertPlace(place));
 			System.out.println("Place " + (i+1) +" is migrated");
-		}
-
-		int nbRefPlace = designfile.getHilecopComponent().getRefPlaces().size();
-		System.out.println("Number of Generic :" + nbRefPlace);
-		for(int i=0;i<nbRefPlace;i++){
-			RefPlace refplace = designfile.getHilecopComponent().getRefPlaces().get(i);
-			newroot.getComponent().getPNStructureObjects().add(convertRefPlace(refplace));
-			System.out.println("RefPlace " + (i+1) +" is migrated");
 		}
 		
 		int nbTransition = origiprojet.getTransition().size();
@@ -99,15 +137,27 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertTransition(Transition));
 			System.out.println("Transition " + (i+1) +" is migrated");
 		}
+	}
+	
+	public void migrationRefNode(){
+		int nbRefPlace = designfile.getHilecopComponent().getRefPlaces().size();
+		System.out.println("Number of RefPlace :" + nbRefPlace);
+		for(int i=0;i<nbRefPlace;i++){
+			RefPlace refplace = designfile.getHilecopComponent().getRefPlaces().get(i);
+			newroot.getComponent().getPNStructureObjects().add(convertRefPlace(refplace));
+			System.out.println("RefPlace " + (i+1) +" is migrated");
+		}
 		
 		int nbRefTransition = designfile.getHilecopComponent().getRefTransitions().size();
-		System.out.println("Number of Generic :" + nbRefTransition);
+		System.out.println("Number of RefTransition :" + nbRefTransition);
 		for(int i=0;i<nbRefTransition;i++){
 			RefTransition refTransition = designfile.getHilecopComponent().getRefTransitions().get(i);
 			newroot.getComponent().getPNStructureObjects().add(convertRefTransition(refTransition));
 			System.out.println("RefTransition " + (i+1) +" is migrated");
 		}
-		
+	}
+
+	public void migrationArc(){
 		int nbBasicArc = origiprojet.getBasicArc().size();
 		System.out.println("Number of BasicArc : " + nbBasicArc);
 		for(int i=0;i<nbBasicArc;i++){
@@ -137,20 +187,19 @@ public class MigrationDuComposant {
 			System.out.println("FusionArc " + (i+1) +" is migrated");
 		}
 	}
-
-
-	/*
-	public void migrateConnection(Connection connection){
-		field.Connection newconnection = FieldFactory.eINSTANCE.createConnection();
-
-		//@TODO connection only has getID 
-
-		//newconnection.setName(connection.get);
-		//newroot.getComponent().getFields().add(newconnection);
-
+	
+	public void migrationInstance(){
+		EList<ComponentInstance> listeInstance = designfile.getHilecopComponent().getComponentBehaviour().getComponentsInstances(); 
+		System.out.println("Number of Instance : " + listeInstance.size());
+		for(int i=0;i<listeInstance.size();i++){
+			newroot.getComponent().getComponentInstances().add(convertInstance(listeInstance.get(i)));
+			System.out.println("Instance " + (i+1) +" is migrated");
+		}
 	}
-	*/
-
+	
+	/*
+	 * Field
+	 */
 	private VHDLPort convertPort(Port port){
 		VHDLPort newport = FieldFactory.eINSTANCE.createVHDLPort(); 
 		newport.setName(port.getName());
@@ -183,7 +232,49 @@ public class MigrationDuComposant {
 		newconstant.setDefaultValue(constant.getDefaultValue());
 		return newconstant;
 	}
+	
+	private field.SimpleConnection convertSimpleConnection(hilecopComponent.SimpleConnection Sconnection){
+		SimpleConnection newSconnection = FieldFactory.eINSTANCE.createSimpleConnection();
+		//newSconnection.setName(Sconnection.get);
+		setField(newSconnection,Sconnection);
+		return newSconnection;
+	}
+	
+	private field.FusionConnection convertFusionConnection(hilecopComponent.FusionConnection Fconnection){
+		FusionConnection newFconnection = FieldFactory.eINSTANCE.createFusionConnection();
+		//newSconnection.setName(Sconnection.get);
+		setField(newFconnection,Fconnection);
+		return newFconnection;
+	}
+	
+	/**
+	 * @param pnaction
+	 * @return
+	 */
+	private VHDLAction convertVHDLAction(PNAction pnaction){
+		VHDLAction vhdlAction = ScriptFactory.eINSTANCE.createVHDLAction();
+		setVHDLscript(vhdlAction,pnaction);
+		return vhdlAction;
+	}
 
+	private VHDLCondition convertVHDLCondition(PNCondition pnCondition){
+		VHDLCondition vhdlCondition = ScriptFactory.eINSTANCE.createVHDLCondition();
+		setVHDLscript(vhdlCondition,pnCondition);
+		return vhdlCondition;
+	}
+	
+	private VHDLFunction convertVHDLFunction(PNFunction pnFunction){
+		VHDLFunction vhdlFunction = ScriptFactory.eINSTANCE.createVHDLFunction();
+		setVHDLscript(vhdlFunction,pnFunction);
+		return vhdlFunction;
+	}
+	
+	private VHDLTime convertVHDLTime(PNTime pntime){
+		VHDLTime vhdlTime = ScriptFactory.eINSTANCE.createVHDLTime();
+		setVHDLscript(vhdlTime,pntime);
+		return vhdlTime;
+	}
+	
 	private petriNet.Place convertPlace(Place place){
 		petriNet.Place newplace = PetriNetFactory.eINSTANCE.createPlace();
 		newplace.setName(place.getName());
@@ -192,18 +283,11 @@ public class MigrationDuComposant {
 		EList<PNEntityInterpretation> listeInterpretation = place.getInterpretation();
 		for(int i=0;i<listeInterpretation.size();i++){
 			if(listeInterpretation.get(i).getClass().equals("class hilecopComponent.impl.ActionImpl"))
-			/**
-			 * @TODO ifelse?
-			 */
 			{
 				Action action =  (Action) listeInterpretation.get(i);
-				newplace.getActions().add(convertAction(action));
+				setAction(newplace,action);
 			}
 		}
-		/**
-		 * @TODO chaque fois "add to liste Action dans nouveau root?"
-		 */
-		
 		return newplace;
 	}
 
@@ -212,7 +296,7 @@ public class MigrationDuComposant {
 		newrefplace.setName(refplace.getName());
 		setRefPlaceMode(newrefplace, refplace);
 		//check refplace.place exist ou pas
-		ArrayList<petriNet.Place> listeplace = newprojet.getPlace();
+		ArrayList<petriNet.Place> listeplace = newprojet.getPlaces();
 		String placename = refplace.getPlace().getName();
 		Boolean notfind = true;
 		for(int i=0;i<listeplace.size();i++){
@@ -230,26 +314,30 @@ public class MigrationDuComposant {
 	private petriNet.Transition convertTransition(Transition transition){
 		petriNet.Transition newtransition = PetriNetFactory.eINSTANCE.createTransition();
 		newtransition.setName(transition.getName());
+		int nbtime = 0;
 		EList<PNEntityInterpretation> listeInterpretation = transition.getInterpretation();
 		for(int i=0;i<listeInterpretation.size();i++){
 			String interpretationtype = listeInterpretation.get(i).getClass().toString();
 			if(interpretationtype.equals("class hilecopComponent.impl.ConditionImpl"))
 			{
 				Condition condition =  (Condition) listeInterpretation.get(i);
-				newtransition.getConditions().add(convertCondition(condition));
+				setCondition(newtransition,condition);
 			}
 			if(interpretationtype.equals("class hilecopComponent.impl.FunctionImpl"))
 			{
 				Function function =  (Function) listeInterpretation.get(i);
-				newtransition.getFunctions().add(convertFunction(function));
+				setFunction(newtransition,function);
 			}
-			if(interpretationtype.equals("class hilecopComponent.impl.TimeImpl"))
+			if(interpretationtype.equals("class hilecopComponent.impl.TimeImpl")&&nbtime<2)
 			{
+				nbtime = nbtime+1;
+				if(nbtime==1){
 				Time time =  (Time) listeInterpretation.get(i);
-				newtransition.setTime(convertTime(time));
-				/**
-				 * TODO s'il y plusieurs times dans l'oldprojet?
-				 */
+				setTime(newtransition,time);
+				}
+				else{
+					System.out.println("Error : More than one time for this transition");
+				}
 			}
 		}
 		return newtransition;
@@ -260,7 +348,7 @@ public class MigrationDuComposant {
 		newreftransition.setName(reftransition.getName());
 		setRefTransitionMode(newreftransition, reftransition);		
 		//check reftransition.transition exist ou pas
-		ArrayList<petriNet.Transition> listetransition = newprojet.getTransition();
+		ArrayList<petriNet.Transition> listetransition = newprojet.getTransitions();
 		String transitionname = reftransition.getTransition().getName();
 		Boolean notfind = true;
 		for(int i=0;i<listetransition.size();i++){
@@ -273,40 +361,6 @@ public class MigrationDuComposant {
 			System.out.println("Can't find transition "+ transitionname);
 		}
 		return newreftransition;
-	}
-	
-	private petriNet.Action convertAction(Action action){
-		petriNet.Action newaction = PetriNetFactory.eINSTANCE.createAction();
-		newaction.setName(action.getName());
-		newaction.setScript_action(getVHDLAction(action.getAction()));
-		return newaction;
-	}
-	
-	private petriNet.Condition convertCondition(Condition condition){
-		petriNet.Condition newcondition = PetriNetFactory.eINSTANCE.createCondition();
-		newcondition.setName(condition.getName());
-		newcondition.setScript_condition(getVHDLCondition(condition.getCondition()));
-		setOperator(newcondition,condition);
-		return newcondition;
-	}
-
-	private petriNet.Function convertFunction(Function function){
-		petriNet.Function newfunction = PetriNetFactory.eINSTANCE.createFunction();
-		newfunction.setName(function.getName());
-		newfunction.setScript_function(getVHDLFunction(function.getFunction()));
-		return newfunction;
-	}
-	
-	private petriNet.Time convertTime(Time time){
-		petriNet.Time newtime = PetriNetFactory.eINSTANCE.createTime();
-		newtime.setTmin(time.getTmin());
-		newtime.setTmax(time.getTmax());
-		newtime.setDescription(time.getDescription());
-		/**
-		 * TODO time.getDynamicTime()!=null ?
-		 */
-		newtime.setScript_time(getVHDLTime(time.getDynamicTime()));
-		return newtime;
 	}
 	
 	private petriNet.BasicArc convertBasicArc(BasicArc barc){
@@ -339,27 +393,55 @@ public class MigrationDuComposant {
 		setNode(newFarc,farc);
 		return newFarc;
 	}
+	
+	private root.ComponentInstance convertInstance(ComponentInstance instance){
+		root.ComponentInstance newinstance = RootFactory.eINSTANCE.createComponentInstance();
+		newinstance.setName(instance.getName());
+		newinstance.setInstanceOf(instance.getInstanceOf().getDescriptorName());
+		if(!instance.getPorts().isEmpty()){
+			for(int i=0;i<instance.getPorts().size();i++){
+				newinstance.getFields().add(convertPort(instance.getPorts().get(i)));
+			}
+		}
+		if(!instance.getGenerics().isEmpty()){
+			for(int i=0;i<instance.getGenerics().size();i++){
+				newinstance.getFields().add(convertGeneric(instance.getGenerics().get(i)));
+			}
+		}
+		if(!instance.getSignals().isEmpty()){
+			for(int i=0;i<instance.getSignals().size();i++){
+				newinstance.getFields().add(convertSignal(instance.getSignals().get(i)));
+			}
+		}
+		if(!instance.getRefPlaces().isEmpty()){
+			for(int i=0;i<instance.getRefPlaces().size();i++){
+				newinstance.getPNStructureObjects().add(convertRefPlace(instance.getRefPlaces().get(i)));
+			}
+		}
+		if(!instance.getRefTransitions().isEmpty()){
+			for(int i=0;i<instance.getRefTransitions().size();i++){
+				newinstance.getPNStructureObjects().add(convertRefTransition(instance.getRefTransitions().get(i)));
+			}
+		}
+		return newinstance;
+	}
+	
+	
 	/**
 	 * Donner mode du port selon mode de l'oldprojet port
 	 * @param newport
 	 * @param port
 	 */
 	private void setPortMode(VHDLPort newport, Port port){
-		/**
-		 * TODO comparer les autres champs?
-		 */
 		if(port.getMode().getValue()==0){
 			newport.setMode(PortMode.IN);
 		}
 		if(port.getMode().getValue()==1){
-			newport.setMode(PortMode.IN);
+			newport.setMode(PortMode.OUT);
 		}
 		if(port.getMode().getValue()==2){
-			newport.setMode(PortMode.IN);
+			newport.setMode(PortMode.INOUT);
 		}
-		/**
-		 * TODO gerer exception
-		 */
 	}
 
 	private void setRefPlaceMode(petriNet.RefPlace newrefplace, RefPlace refplace){
@@ -372,12 +454,8 @@ public class MigrationDuComposant {
 		if(refplace.getMode().getValue()==2){
 			newrefplace.setMode(PortMode.INOUT);
 		}
-		/**
-		 * TODO peut = ConvertPortMode?
-		 */
 	}
 	/**
-	 * TODO comment utiliser un method pour port/place/transition
 	 * @param newrefTransition
 	 * @param refTransition
 	 */
@@ -402,79 +480,103 @@ public class MigrationDuComposant {
 		}
 	}
 	
-	/**
-	 * TODO utilise un method pour les 3
-	 * @param pnaction
-	 * @return
-	 */
-	private VHDLAction getVHDLAction(PNAction pnaction){
-		VHDLAction vhdlAction = ScriptFactory.eINSTANCE.createVHDLAction();
-		vhdlAction.setName(pnaction.getName());
-		String script = pnaction.getBehaviourInterpretation().getScript();
-		int begin = script.indexOf("is begin");
-		int fin = script.lastIndexOf("end");
-		String content = script.substring(begin+8, fin);
-		vhdlAction.setContent(content);
-		return vhdlAction;
-	}
-
-	private VHDLCondition getVHDLCondition(PNCondition pnCondition){
-		VHDLCondition vhdlCondition = ScriptFactory.eINSTANCE.createVHDLCondition();
-		vhdlCondition.setName(pnCondition.getName());
-		String script = pnCondition.getBehaviourInterpretation().getScript();
-		int begin = script.indexOf("is begin");
-		int fin = script.lastIndexOf("end");
-		String content = script.substring(begin+8, fin);
-		vhdlCondition.setContent(content);
-		return vhdlCondition;
+	private void setAction(petriNet.Place newplace, Action action){
+		petriNet.Action newaction = PetriNetFactory.eINSTANCE.createAction();
+		newaction.setName(action.getName());
+		String VHDLActionName = action.getAction().getName();
+		ArrayList<VHDLAction> listeAction = newprojet.getVHDLActions();
+		for(int i=0;i<listeAction.size();i++){
+			if(listeAction.get(i).getName().equals(VHDLActionName)){
+				newaction.setScript_action(listeAction.get(i));
+				newplace.getActions().add(newaction);
+			}
+		}
 	}
 	
-	private VHDLFunction getVHDLFunction(PNFunction pnFunction){
-		VHDLFunction vhdlFunction = ScriptFactory.eINSTANCE.createVHDLFunction();
-		vhdlFunction.setName(pnFunction.getName());
-		String script = pnFunction.getBehaviourInterpretation().getScript();
-		int begin = script.indexOf("is begin");
-		int fin = script.lastIndexOf("end");
-		String content = script.substring(begin+8, fin);
-		vhdlFunction.setContent(content);
-		return vhdlFunction;
+	private void setFunction(petriNet.Transition newTransition, Function Function){
+		petriNet.Function newFunction = PetriNetFactory.eINSTANCE.createFunction();
+		newFunction.setName(Function.getName());
+		String VHDLFunctionName = Function.getFunction().getName();
+		ArrayList<VHDLFunction> listeFunction = newprojet.getVHDLFunctions();
+		for(int i=0;i<listeFunction.size();i++){
+			if(listeFunction.get(i).getName().equals(VHDLFunctionName)){
+				newFunction.setScript_function(listeFunction.get(i));
+				newTransition.getFunctions().add(newFunction);
+			}
+		}
 	}
 	
-	private VHDLTime getVHDLTime(PNTime pntime){
-		VHDLTime vhdlTime = ScriptFactory.eINSTANCE.createVHDLTime();
-		vhdlTime.setName(pntime.getName());
-		String script = pntime.getBehaviourInterpretation().getScript();
+	private void setCondition(petriNet.Transition newTransition, Condition condition){
+		petriNet.Condition newcondition = PetriNetFactory.eINSTANCE.createCondition();
+		newcondition.setName(condition.getName());
+		setOperator(newcondition,condition);
+		String VHDLConditionName = condition.getCondition().getName();
+		ArrayList<VHDLCondition> listeCondition = newprojet.getVHDLConditions();
+		for(int i=0;i<listeCondition.size();i++){
+			if(listeCondition.get(i).getName().equals(VHDLConditionName)){
+				newcondition.setScript_condition(listeCondition.get(i));
+				newTransition.getConditions().add(newcondition);
+			}
+		}
+	}
+	
+	private void setTime(petriNet.Transition newtransition, Time time){
+		petriNet.Time newtime = PetriNetFactory.eINSTANCE.createTime();
+		newtime.setTmin(time.getTmin());
+		newtime.setTmax(time.getTmax());
+		newtime.setDescription(time.getDescription());
+		if(!time.getDynamicTime().getTimes().isEmpty()){
+			newtime.setScript_time(convertVHDLTime(time.getDynamicTime()));
+		}
+		newtransition.setTime(newtime);
+	}
+	
+	
+	private void setVHDLscript(VHDLElement vhdl, PNInterpretationElement pn){
+		vhdl.setName(pn.getName());
+		String script = pn.getBehaviourInterpretation().getScript();
 		int begin = script.indexOf("is begin");
 		int fin = script.lastIndexOf("end");
 		String content = script.substring(begin+8, fin);
-		vhdlTime.setContent(content);
-		return vhdlTime;
+		vhdl.setContent(content);
 	}
 	
 	private void setNode(petriNet.Arc newArc, Arc arc){
 		String nameSource = arc.getSourceNode().getName();
 		String nameTarget = arc.getTargetNode().getName();
-		ArrayList<Place> listePlace = origiprojet.getPlace();
-		ArrayList<Transition> listeTransition = origiprojet.getTransition();
-		/**
-		 * TODO besoin Ref ?
-		 */
+		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
+		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
 		for(int i=0;i<listePlace.size();i++){
 			if(listePlace.get(i).getName().equals(nameSource)){
-				newArc.setSourceNode((Node) listePlace.get(i));
+				newArc.setSourceNode(listePlace.get(i));
 			}
 			if(listePlace.get(i).getName().equals(nameTarget)){
-				newArc.setTargetNode((Node) listePlace.get(i));
+				newArc.setTargetNode(listePlace.get(i));
 			}
 		}
 		for(int i=0;i<listeTransition.size();i++){
 			if(listeTransition.get(i).getName().equals(nameSource)){
-				newArc.setSourceNode((Node) listeTransition.get(i));
+				newArc.setSourceNode(listeTransition.get(i));
 			}
 			if(listeTransition.get(i).getName().equals(nameTarget)){
-				newArc.setTargetNode((Node) listeTransition.get(i));
+				newArc.setTargetNode(listeTransition.get(i));
 			}
 		}
 	}
 	
+	private void setField(field.Connection newconnection, hilecopComponent.BasicConnection connection){
+		String nameInput = connection.getSourceField().getName();
+		Boolean notfindInput = true;
+		String nameOutput = connection.getTargetField().getName();
+		Boolean notfindOutput = true;
+		EList<field.Field> listefield = newroot.getComponent().getFields();
+		for(int i=0;i<listefield.size()&&(notfindInput||notfindOutput);i++){
+			if(listefield.get(i).getName().equals(nameInput)&&notfindInput){
+				newconnection.setInputField(listefield.get(i));
+			}
+			if(listefield.get(i).getName().equals(nameOutput)&&notfindOutput){
+				newconnection.setOutputField(listefield.get(i));
+			}
+		}
+	}
 }
