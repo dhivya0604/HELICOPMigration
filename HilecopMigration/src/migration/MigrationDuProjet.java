@@ -34,11 +34,10 @@ public class MigrationDuProjet {
 	}
 	
 	private void migrationComposant(String path1, String path2) throws IOException{
-		ProjetAncien ancien = new ProjetAncien(path1);
+		AncienComposant ancien = new AncienComposant(path1);
 		String name = ancien.getRoot().getDesignFileName();
 
-		ProjetNouveau nouveau = new ProjetNouveau(path2, name);
-		nouveau.createRoot(name);
+		NouveauComposant nouveau = new NouveauComposant(path2, name);
 		MigrationDuComposant migtool = new MigrationDuComposant(nouveau,ancien);
 		migtool.migeration();
 		nouveau.save();

@@ -14,8 +14,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import hilecopComponent.BasicArc;
 import hilecopComponent.BehaviourField;
+import hilecopComponent.ComponentInstance;
+import hilecopComponent.Connection;
 import hilecopComponent.Constant;
 import hilecopComponent.FusionArc;
+import hilecopComponent.Generic;
 import hilecopComponent.HilecopComponentDesignFile;
 import hilecopComponent.InhibitorArc;
 import hilecopComponent.PNAction;
@@ -25,10 +28,14 @@ import hilecopComponent.PNFunction;
 import hilecopComponent.PNTime;
 import hilecopComponent.PetriNetComponentBehaviour;
 import hilecopComponent.Place;
+import hilecopComponent.Port;
+import hilecopComponent.RefPlace;
+import hilecopComponent.RefTransition;
+import hilecopComponent.Signal;
 import hilecopComponent.TestArc;
 import hilecopComponent.Transition;
 
-public class ProjetAncien {
+public class AncienComposant {
 	private HilecopComponentDesignFile designfile;
 	private ArrayList<Place> listePlace;
 	private ArrayList<Transition> listeTransition;
@@ -38,7 +45,7 @@ public class ProjetAncien {
 	private ArrayList<FusionArc> listeFusionArc;
 	private PetriNetComponentBehaviour pn;
 	
-	public ProjetAncien(String path){
+	public AncienComposant(String path){
 		ResourceSet ancienResourceSet = new ResourceSetImpl();
 		ancienResourceSet.getPackageRegistry().put(hilecopComponent.HilecopComponentPackage.eNS_URI,hilecopComponent.HilecopComponentPackage.eINSTANCE);
 		URI ancienfileURI = URI.createFileURI(path);
@@ -87,7 +94,17 @@ public class ProjetAncien {
 		return designfile;
 	}
 	
-	public ArrayList<Constant> getConstant(){
+	/*  Fields  */
+	public EList<Port> getPorts(){
+		return designfile.getHilecopComponent().getPorts();
+	}
+	public EList<Signal> getSignals(){
+		return designfile.getHilecopComponent().getSignals();
+	}
+	public EList<Generic> getGenerics(){
+		return designfile.getHilecopComponent().getGenerics();
+	}
+	public ArrayList<Constant> getConstants(){
 		EList<BehaviourField> listeField = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields();
 		ArrayList<Constant> listeConstant = new ArrayList<Constant>();
 		for(int i=0;i<listeField.size();i++){
@@ -99,40 +116,52 @@ public class ProjetAncien {
 		return listeConstant;
 	}
 
-	public ArrayList<Place> getPlace(){		
+	public EList<ComponentInstance> getInstances(){
+		return designfile.getHilecopComponent().getComponentBehaviour().getComponentsInstances(); 
+	}
+	
+	public ArrayList<Place> getPlaces(){		
 		return listePlace;
 	}
-
-	public ArrayList<Transition> getTransition(){
+	public ArrayList<Transition> getTransitions(){
 		return listeTransition;
 	}
-
-	public EList<PNAction> getPNAction(){
+	public EList<RefPlace> getRefPlaces(){
+		return designfile.getHilecopComponent().getRefPlaces();
+	}
+	public EList<RefTransition> getRefTransitions(){
+		return designfile.getHilecopComponent().getRefTransitions();
+	}
+	
+	/*  PNElements  */
+	public EList<PNAction> getPNActions(){
 		return pn.getInterpretation().getActions();
 	}
-	
-	public EList<PNFunction> getPNFunction(){
+	public EList<PNFunction> getPNFunctions(){
 		return pn.getInterpretation().getFunctions();
 	}
-
-	public EList<PNCondition> getPNCondition(){
+	public EList<PNCondition> getPNConditions(){
 		return pn.getInterpretation().getConditions();
-	}
-	
-	public EList<PNTime> getPNTime(){
+	}	
+	public EList<PNTime> getPNTimes(){
 		return pn.getInterpretation().getTimes();
 	}
 	
-	public ArrayList<BasicArc> getBasicArc(){
+	/*  Arcs  */
+	public ArrayList<BasicArc> getBasicArcs(){
 		return listeBasicArc;
 	};
-	public ArrayList<TestArc> getTestArc(){
+	public ArrayList<TestArc> getTestArcs(){
 		return listeTestArc;
 	};
-	public ArrayList<InhibitorArc> getInhibitorArc(){
+	public ArrayList<InhibitorArc> getInhibitorArcs(){
 		return listeInhibitorArc;
 	};
-	public ArrayList<FusionArc> getFusionArc(){
+	public ArrayList<FusionArc> getFusionArcs(){
 		return listeFusionArc;
+	}
+	
+	public EList<Connection> getConnections(){
+		return designfile.getHilecopComponent().getComponentBehaviour().getConnections();
 	}
 }

@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
-import field.*;
 import root.*;
 import script.VHDLAction;
 import script.VHDLCondition;
@@ -22,7 +21,7 @@ import script.VHDLElement;
 import script.VHDLFunction;
 import script.VHDLTime;
 
-public class ProjetNouveau {
+public class NouveauComposant {
 	private ResourceSet resourceSet;
 	private Resource newres;
 	private HilecopRoot newroot;
@@ -33,7 +32,7 @@ public class ProjetNouveau {
 	 * @param name
 	 * @throws IOException
 	 */
-	public ProjetNouveau(String path, String name) throws IOException{
+	public NouveauComposant(String path, String name) throws IOException{
 		resourceSet = new ResourceSetImpl();
 		resourceSet.getPackageRegistry().put(root.RootPackage.eNS_URI,root.RootPackage.eINSTANCE);
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("root",new XMIResourceFactoryImpl());
@@ -42,24 +41,8 @@ public class ProjetNouveau {
 		file.createNewFile();
 		URI newURI = URI.createFileURI(filename);
 		newres = resourceSet.createResource(newURI);
-	}
-
-	/**
-	 * cr¨¦er un nouveau composant avec le m¨ºme nom de l'ancien
-	 * @param name
-	 */
-	public void createRoot(String name){
+		
 		newroot = RootFactory.eINSTANCE.createHilecopRoot(name);
-
-		//cr¨¦er ResetPort, ClockPort et ClockEnablePort et les ajouter dans le composant
-
-		ResetPort resetport = FieldFactory.eINSTANCE.createResetPort();
-		ClockPort clockport = FieldFactory.eINSTANCE.createClockPort();
-		ClockEnablePort clockenable = FieldFactory.eINSTANCE.createClockEnablePort();
-
-		newroot.getComponent().setResetPort(resetport);
-		newroot.getComponent().setClockPort(clockport);
-		newroot.getComponent().setClockEnablePort(clockenable);
 	}
 	
 	public HilecopRoot getRoot(){
