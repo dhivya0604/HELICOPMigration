@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class FileExplorer{
 
-	public ArrayList<File> liste_fichiers;
+	private ArrayList<File> liste_fichiers;
 
 	public FileExplorer()
 	{
@@ -25,7 +25,7 @@ public class FileExplorer{
 	/**
 	 *parcours de repertoire
 	 * @param path
-	 * @return path de repetoires et des fichiers .helicopcomponent
+	 * @return
 	 */
 	public ArrayList<File> parcours(String path)
 	{	
@@ -62,13 +62,54 @@ public class FileExplorer{
 		return liste_fichiers;
 	}
 	
+	
+	/*public void parcours(String path)
+	{
 
-	/**
-	 * test de dossier s'il contient projet helicop
-	 * @param File
-	 * @ return true s'il le contient false sinon
-	 * 
-	 */
+	File file=new File (path);
+		File[] Lrep=file.listFiles();
+
+	//	DefaultMutableTreeNode noeud;
+
+			for(int i=0;i<Lrep.length;i++)
+			{//noeud= new DefaultMutableTreeNode(Lrep[i].getName());
+
+			if(Lrep[i].isDirectory()==true)
+				{ 						System.out.println("repertoire"+Lrep[i].getName());
+						//System.out.println("noeud"+noeud);
+						//root.add(noeud);
+						parcours(Lrep[i].getAbsolutePath());
+						//DefaultMutableTreeNode noeud1=new DefaultMutableTreeNode(Lrep[i].getName());
+						//noeud.add(noeud);
+
+						int j=0;
+						 File[] Lfiles=Lrep[i].listFiles();
+						 if(Lfiles!=null){
+
+							 for(j=0;j<Lfiles.length;j++){
+							 {if(Lfiles[j].getName().contains(".project")==true)
+							 	{
+								 	System.out.println("fichier"+Lfiles[j].getName());
+								 	//noeud.add(new DefaultMutableTreeNode(Lfiles[j].getName()));
+
+							 	}
+							// }
+
+						 }
+					}
+				}
+			if(i==Lrep.length-3)
+			{
+				tree=new JTree(root);
+				p1.add(tree);
+				f.add(p1);
+				f.setBounds(100, 100, 446, 351);
+				f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+				f.setVisible(true);
+			}
+		}}
+	}*/
+
 	private boolean test_projet_hilecop(File file) {
 		BufferedReader reader;
 		try
