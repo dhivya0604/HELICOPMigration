@@ -53,7 +53,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLAction> listeAction = new ArrayList<VHDLAction>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.PNActionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.PNActionImpl")){
 				listeAction.add((VHDLAction) listeVHDL.get(i));
 			}
 		}
@@ -64,7 +64,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLCondition> listeCondition = new ArrayList<VHDLCondition>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLConditionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLConditionImpl")){
 				listeCondition.add((VHDLCondition) listeVHDL.get(i));
 			}
 		}
@@ -75,7 +75,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLFunction> listeFunction = new ArrayList<VHDLFunction>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLFunctionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLFunctionImpl")){
 				listeFunction.add((VHDLFunction) listeVHDL.get(i));
 			}
 		}
@@ -86,7 +86,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLTime> listeTime = new ArrayList<VHDLTime>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class hilecopComponent.impl.VHDLTimeImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLTimeImpl")){
 				listeTime.add((VHDLTime) listeVHDL.get(i));
 			}
 		}
@@ -96,7 +96,7 @@ public class NouveauComposant {
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Place> listeplace = new ArrayList<petriNet.Place>();
 		for(int i=0;i<pn.size();i++){
-			if(pn.get(i).getClass().toString().equals("class hilecopComponent.impl.PlaceImpl")){
+			if(pn.get(i).getClass().toString().equals("class petriNet.impl.PlaceImpl")){
 				listeplace.add((petriNet.Place) pn.get(i));
 			}
 		}
@@ -107,7 +107,7 @@ public class NouveauComposant {
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Transition> listeTransition = new ArrayList<petriNet.Transition>();
 		for(int i=0;i<pn.size();i++){
-			if(pn.get(i).getClass().toString().equals("class hilecopComponent.impl.TransitionImpl")){
+			if(pn.get(i).getClass().toString().equals("class petriNet.impl.TransitionImpl")){
 				listeTransition.add((petriNet.Transition) pn.get(i));
 			}
 		}

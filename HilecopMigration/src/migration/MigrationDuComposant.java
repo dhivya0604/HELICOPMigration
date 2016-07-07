@@ -313,7 +313,7 @@ public class MigrationDuComposant {
 			}
 		}
 		if(notfind){
-			System.out.println("Can't find Place "+ placename);
+			System.out.println("Error : Can't find Place "+ placename);
 		}
 		return newrefplace;
 	}
@@ -343,7 +343,7 @@ public class MigrationDuComposant {
 					setTime(newtransition,time);
 				}
 				else{
-					System.out.println("Error : More than one time for this transition");
+					System.out.println("Warning : More than one time for transition " + transition.getName());
 				}
 			}
 		}
@@ -365,12 +365,13 @@ public class MigrationDuComposant {
 			}
 		}
 		if(notfind){
-			System.out.println("Can't find transition "+ transitionname);
+			System.out.println("Error : Can't find transition "+ transitionname);
 		}
 		return newreftransition;
 	}
 
 	private petriNet.BasicArc convertBasicArc(BasicArc barc){
+		System.out.println("BasicArc "+barc.getName());
 		petriNet.BasicArc newBarc = PetriNetFactory.eINSTANCE.createBasicArc();
 		newBarc.setName(barc.getName());
 		newBarc.setRuleExpression(barc.getRuleExpression());
@@ -379,6 +380,7 @@ public class MigrationDuComposant {
 	}
 
 	private petriNet.TestArc convertTestArc(TestArc tarc){
+		System.out.println("TestArc "+tarc.getName());
 		petriNet.TestArc newTarc = PetriNetFactory.eINSTANCE.createTestArc();
 		newTarc.setName(tarc.getName());
 		newTarc.setRuleExpression(tarc.getRuleExpression());
@@ -387,6 +389,7 @@ public class MigrationDuComposant {
 	}
 
 	private petriNet.InhibitorArc convertInhibitorArc(InhibitorArc iarc){
+		System.out.println("InhibitorArc "+iarc.getName());
 		petriNet.InhibitorArc newIarc = PetriNetFactory.eINSTANCE.createInhibitorArc();
 		newIarc.setName(iarc.getName());
 		newIarc.setRuleExpression(iarc.getRuleExpression());
@@ -395,6 +398,7 @@ public class MigrationDuComposant {
 	}
 
 	private petriNet.FusionArc convertFusionArc(FusionArc farc){
+		System.out.println("FusionArc "+farc.getName());
 		petriNet.FusionArc newFarc = PetriNetFactory.eINSTANCE.createFusionArc();
 		newFarc.setName(farc.getName());
 		setNode(newFarc,farc);
@@ -548,10 +552,17 @@ public class MigrationDuComposant {
 	private void setNode(petriNet.Arc newArc, Arc arc){
 		hilecopComponent.Node nodeSource = arc.getSourceNode();
 		hilecopComponent.Node nodeTarget = arc.getTargetNode();
-		newArc.setSourceNode(findNode(nodeSource));
-		newArc.setTargetNode(findNode(nodeTarget));
+		if((findNode(nodeSource)!=null)&&(findNode(nodeTarget)!=null)){
+			System.out.println("Set Source "+findNode(nodeSource));
+			newArc.setSourceNode(findNode(nodeSource));
+			System.out.println("Set Target "+findNode(nodeTarget));
+			newArc.setTargetNode(findNode(nodeTarget));
+		}
+		else{
+			System.out.println("Error : Can not find Node for arc "+arc.getName());
+		}
 	}
-	
+
 	private Node findNode(hilecopComponent.Node node){
 		String name = node.getName();
 		String typeContainer = node.eContainer().getClass().toString();
@@ -560,8 +571,10 @@ public class MigrationDuComposant {
 		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
 		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
+		System.out.println(typeContainer);
 		
 		if(typeContainer.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			//System.out.println("This Node is in a Instance");
 			ComponentInstance instance = (ComponentInstance) node.eContainer();
 			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */
@@ -570,12 +583,14 @@ public class MigrationDuComposant {
 					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
 					for(int j=0;j<listeRefPlace.size()&&notfind;j++){
 						if(listeRefPlace.get(j).getName().equals(name)){
+							System.out.println(listeRefPlace.get(j).getName());
 							newnode = (Node) listeRefPlace.get(j);
 							notfind = false;
 						}
 					}
 					for(int j=0;j<listeRefTransition.size()&&notfind;j++){
 						if(listeRefTransition.get(j).getName().equals(name)){
+							System.out.println(listeRefTransition.get(j).getName());
 							newnode = (Node) listeRefTransition.get(i);
 							notfind = false;
 						}
@@ -584,13 +599,16 @@ public class MigrationDuComposant {
 			}
 		}
 		else{
-			for(int i=0;i<listePlace.size()&&notfind;i++){
+			//System.out.println(listePlace.size());
+			for(int i=0;(i<listePlace.size())&&notfind;i++){
+				//System.out.println("Begin looking for "+name +" in Place");
 				if(listePlace.get(i).getName().equals(name)){
 					newnode = listePlace.get(i);
 					notfind = false;
 				}
 			}
-			for(int i=0;i<listeTransition.size()&&notfind;i++){
+			for(int i=0;(i<listeTransition.size())&&notfind;i++){
+				//System.out.println("Begin looking for "+name +" in Transition");
 				if(listeTransition.get(i).getName().equals(name)){
 					newnode = listeTransition.get(i);
 					notfind = false;
@@ -603,11 +621,15 @@ public class MigrationDuComposant {
 	private void setField(field.Connection newconnection, hilecopComponent.BasicConnection connection){
 		hilecopComponent.Field fieldInput = connection.getSourceField();
 		hilecopComponent.Field fieldOutput = connection.getTargetField();
-		
-		newconnection.setInputField(findField(fieldInput));
-		newconnection.setOutputField(findField(fieldOutput));
+		if((findField(fieldInput)!=null)&&(findField(fieldOutput)!=null)){
+			newconnection.setInputField(findField(fieldInput));
+			newconnection.setOutputField(findField(fieldOutput));
+		}
+		else{
+			System.out.println("Error : Can not find Field for connection " + connection.getId());
+		}
 	}
-	
+
 	private Field findField(hilecopComponent.Field field){
 		String name = field.getName();
 		String typecontainer = field.eContainer().getClass().toString();
