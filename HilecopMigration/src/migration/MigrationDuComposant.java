@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import org.eclipse.emf.common.util.EList;
 
 import field.*;
+import field.Field;
 import field.FusionConnection;
 import field.SimpleConnection;
 import hilecopComponent.*;
 import hilecopComponent.Connection;
+import petriNet.Node;
 import petriNet.PetriNetFactory;
 import root.HilecopRoot;
 import root.RootFactory;
@@ -77,7 +79,7 @@ public class MigrationDuComposant {
 			System.out.println("Generic " + (i+1) +" is migrated");
 		}
 	}
-	
+
 	public void migrationInstance(){
 		EList<ComponentInstance> listeInstance = origiprojet.getInstances();
 		System.out.println("Number of Instance : " + listeInstance.size());
@@ -86,33 +88,33 @@ public class MigrationDuComposant {
 			System.out.println("Instance " + (i+1) +" is migrated");
 		}
 	}
-	
+
 	public void migrationVHDL(){
 		EList<PNAction> listeVHDLAction = origiprojet.getPNActions();
 		System.out.println("Number of PNAction : "+listeVHDLAction.size());
 		for(int i=0;i<listeVHDLAction.size();i++){
 			newroot.getComponent().getVHDLElements().add(convertVHDLAction(listeVHDLAction.get(i)));
 		}
-		
+
 		EList<PNFunction> listeVHDLFunction = origiprojet.getPNFunctions();
 		System.out.println("Number of PNFunction : "+listeVHDLFunction.size());
 		for(int i=0;i<listeVHDLFunction.size();i++){
 			newroot.getComponent().getVHDLElements().add(convertVHDLFunction(listeVHDLFunction.get(i)));
 		}
-		
+
 		EList<PNCondition> listeVHDLCondition = origiprojet.getPNConditions();
 		System.out.println("Number of PNCondition : "+listeVHDLCondition.size());
 		for(int i=0;i<listeVHDLCondition.size();i++){
 			newroot.getComponent().getVHDLElements().add(convertVHDLCondition(listeVHDLCondition.get(i)));
 		}
-		
+
 		EList<PNTime> listeVHDLTime = origiprojet.getPNTimes();
 		System.out.println("Number of PNTime : "+listeVHDLTime.size());
 		for(int i=0;i<listeVHDLTime.size();i++){
 			newroot.getComponent().getVHDLElements().add(convertVHDLTime(listeVHDLTime.get(i)));
 		}
 	}
-	
+
 	public void migrationBasicNode(){
 		ArrayList<Place> listePlace = origiprojet.getPlaces();
 		System.out.println("Number of Place : " + listePlace.size());
@@ -121,7 +123,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertPlace(place));
 			System.out.println("Place " + (i+1) +" is migrated");
 		}
-		
+
 		ArrayList<Transition> listeTransition = origiprojet.getTransitions();
 		System.out.println("Number of Transition : " + listeTransition.size());
 		for(int i=0;i<listeTransition.size();i++){
@@ -130,7 +132,7 @@ public class MigrationDuComposant {
 			System.out.println("Transition " + (i+1) +" is migrated");
 		}
 	}
-	
+
 	public void migrationRefNode(){
 		EList<RefPlace> listeRefPlace = origiprojet.getRefPlaces();
 		System.out.println("Number of RefPlace :" + listeRefPlace.size());
@@ -139,7 +141,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertRefPlace(refplace));
 			System.out.println("RefPlace " + (i+1) +" is migrated");
 		}
-		
+
 		EList<RefTransition> listeRefTransition = origiprojet.getRefTransitions();
 		System.out.println("Number of RefTransition :" + listeRefTransition.size());
 		for(int i=0;i<listeRefTransition.size();i++){
@@ -157,7 +159,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertBasicArc(BasicArc));
 			System.out.println("BasicArc " + (i+1) +" is migrated");
 		}
-		
+
 		ArrayList<TestArc> listeTestArc = origiprojet.getTestArcs();
 		System.out.println("Number of TestArc : " + listeTestArc.size());
 		for(int i=0;i<listeTestArc.size();i++){
@@ -165,7 +167,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertTestArc(TestArc));
 			System.out.println("TestArc " + (i+1) +" is migrated");
 		}
-		
+
 		ArrayList<InhibitorArc> listeInhibitorArc = origiprojet.getInhibitorArcs();
 		System.out.println("Number of InhibitorArc : " + listeInhibitorArc.size());
 		for(int i=0;i<listeInhibitorArc.size();i++){
@@ -173,7 +175,7 @@ public class MigrationDuComposant {
 			newroot.getComponent().getPNStructureObjects().add(convertInhibitorArc(InhibitorArc));
 			System.out.println("InhibitorArc " + (i+1) +" is migrated");
 		}
-		
+
 		ArrayList<FusionArc> listeFusionArc = origiprojet.getFusionArcs();
 		System.out.println("Number of FusionArc : " + listeFusionArc.size());
 		for(int i=0;i<listeFusionArc.size();i++){
@@ -182,11 +184,8 @@ public class MigrationDuComposant {
 			System.out.println("FusionArc " + (i+1) +" is migrated");
 		}
 	}
-	
+
 	public void migrationConnection(){
-		/**
-		 * TODO verifier connection entre instance 
-		 */
 		EList<Connection> listeconnection = origiprojet.getConnections();
 		System.out.println("Number of Connection : "+listeconnection.size());
 		for(int i=0;i<listeconnection.size();i++){
@@ -200,7 +199,7 @@ public class MigrationDuComposant {
 			}
 		}
 	}
-	
+
 	/*
 	 * Field
 	 */
@@ -236,7 +235,7 @@ public class MigrationDuComposant {
 		newconstant.setDefaultValue(constant.getDefaultValue());
 		return newconstant;
 	}
-	
+
 	private field.SimpleConnection convertSimpleConnection(hilecopComponent.SimpleConnection Sconnection){
 		SimpleConnection newSconnection = FieldFactory.eINSTANCE.createSimpleConnection();
 		String name = "simpleconnection_"+Sconnection.getId();
@@ -246,7 +245,7 @@ public class MigrationDuComposant {
 		newSconnection.setTargetSelectionExpression(Sconnection.getTargetSelectionExpression());
 		return newSconnection;
 	}
-	
+
 	private field.FusionConnection convertFusionConnection(hilecopComponent.FusionConnection Fconnection){
 		FusionConnection newFconnection = FieldFactory.eINSTANCE.createFusionConnection();
 		String name = "fusionconnection_"+Fconnection.getId();
@@ -254,7 +253,7 @@ public class MigrationDuComposant {
 		setField(newFconnection,Fconnection);
 		return newFconnection;
 	}
-	
+
 	/**
 	 * @param pnaction
 	 * @return
@@ -270,19 +269,19 @@ public class MigrationDuComposant {
 		setVHDLscript(vhdlCondition,pnCondition);
 		return vhdlCondition;
 	}
-	
+
 	private VHDLFunction convertVHDLFunction(PNFunction pnFunction){
 		VHDLFunction vhdlFunction = ScriptFactory.eINSTANCE.createVHDLFunction();
 		setVHDLscript(vhdlFunction,pnFunction);
 		return vhdlFunction;
 	}
-	
+
 	private VHDLTime convertVHDLTime(PNTime pntime){
 		VHDLTime vhdlTime = ScriptFactory.eINSTANCE.createVHDLTime();
 		setVHDLscript(vhdlTime,pntime);
 		return vhdlTime;
 	}
-	
+
 	private petriNet.Place convertPlace(Place place){
 		petriNet.Place newplace = PetriNetFactory.eINSTANCE.createPlace();
 		newplace.setName(place.getName());
@@ -340,8 +339,8 @@ public class MigrationDuComposant {
 			{
 				nbtime = nbtime+1;
 				if(nbtime==1){
-				Time time =  (Time) listeInterpretation.get(i);
-				setTime(newtransition,time);
+					Time time =  (Time) listeInterpretation.get(i);
+					setTime(newtransition,time);
 				}
 				else{
 					System.out.println("Error : More than one time for this transition");
@@ -370,7 +369,7 @@ public class MigrationDuComposant {
 		}
 		return newreftransition;
 	}
-	
+
 	private petriNet.BasicArc convertBasicArc(BasicArc barc){
 		petriNet.BasicArc newBarc = PetriNetFactory.eINSTANCE.createBasicArc();
 		newBarc.setName(barc.getName());
@@ -378,7 +377,7 @@ public class MigrationDuComposant {
 		setNode(newBarc,barc);
 		return newBarc;
 	}
-	
+
 	private petriNet.TestArc convertTestArc(TestArc tarc){
 		petriNet.TestArc newTarc = PetriNetFactory.eINSTANCE.createTestArc();
 		newTarc.setName(tarc.getName());
@@ -386,7 +385,7 @@ public class MigrationDuComposant {
 		setNode(newTarc,tarc);
 		return newTarc;
 	}
-	
+
 	private petriNet.InhibitorArc convertInhibitorArc(InhibitorArc iarc){
 		petriNet.InhibitorArc newIarc = PetriNetFactory.eINSTANCE.createInhibitorArc();
 		newIarc.setName(iarc.getName());
@@ -394,14 +393,14 @@ public class MigrationDuComposant {
 		setNode(newIarc,iarc);
 		return newIarc;
 	}
-	
+
 	private petriNet.FusionArc convertFusionArc(FusionArc farc){
 		petriNet.FusionArc newFarc = PetriNetFactory.eINSTANCE.createFusionArc();
 		newFarc.setName(farc.getName());
 		setNode(newFarc,farc);
 		return newFarc;
 	}
-	
+
 	private root.ComponentInstance convertInstance(ComponentInstance instance){
 		root.ComponentInstance newinstance = RootFactory.eINSTANCE.createComponentInstance();
 		newinstance.setName(instance.getName());
@@ -417,7 +416,7 @@ public class MigrationDuComposant {
 				newinstance.getFields().add(convertGeneric(instance.getGenerics().get(i)));
 			}
 		}
-		*/
+		 */
 		if(!instance.getRefPlaces().isEmpty()){
 			for(int i=0;i<instance.getRefPlaces().size();i++){
 				newinstance.getPNStructureObjects().add(convertRefPlace(instance.getRefPlaces().get(i)));
@@ -430,8 +429,8 @@ public class MigrationDuComposant {
 		}
 		return newinstance;
 	}
-	
-	
+
+
 	/**
 	 * Donner mode du port selon mode de l'oldprojet port
 	 * @param newport
@@ -475,7 +474,7 @@ public class MigrationDuComposant {
 			newrefTransition.setMode(PortMode.INOUT);
 		}
 	}
-	
+
 	private void setOperator(petriNet.Condition newcondition, Condition condition){
 		if(condition.getOperator().getValue()==0){
 			newcondition.setOperator(petriNet.Operator.ID);
@@ -484,7 +483,7 @@ public class MigrationDuComposant {
 			newcondition.setOperator(petriNet.Operator.NOT);
 		}
 	}
-	
+
 	private void setAction(petriNet.Place newplace, Action action){
 		petriNet.Action newaction = PetriNetFactory.eINSTANCE.createAction();
 		newaction.setName(action.getName());
@@ -497,7 +496,7 @@ public class MigrationDuComposant {
 			}
 		}
 	}
-	
+
 	private void setFunction(petriNet.Transition newTransition, Function Function){
 		petriNet.Function newFunction = PetriNetFactory.eINSTANCE.createFunction();
 		newFunction.setName(Function.getName());
@@ -510,7 +509,7 @@ public class MigrationDuComposant {
 			}
 		}
 	}
-	
+
 	private void setCondition(petriNet.Transition newTransition, Condition condition){
 		petriNet.Condition newcondition = PetriNetFactory.eINSTANCE.createCondition();
 		newcondition.setName(condition.getName());
@@ -524,7 +523,7 @@ public class MigrationDuComposant {
 			}
 		}
 	}
-	
+
 	private void setTime(petriNet.Transition newtransition, Time time){
 		petriNet.Time newtime = PetriNetFactory.eINSTANCE.createTime();
 		newtime.setTmin(time.getTmin());
@@ -535,8 +534,8 @@ public class MigrationDuComposant {
 		}
 		newtransition.setTime(newtime);
 	}
-	
-	
+
+
 	private void setVHDLscript(VHDLElement vhdl, PNInterpretationElement pn){
 		vhdl.setName(pn.getName());
 		String script = pn.getBehaviourInterpretation().getScript();
@@ -545,42 +544,150 @@ public class MigrationDuComposant {
 		String content = script.substring(begin+8, fin);
 		vhdl.setContent(content);
 	}
-	
+
 	private void setNode(petriNet.Arc newArc, Arc arc){
 		String nameSource = arc.getSourceNode().getName();
+		String typeContainerSource = arc.getSourceNode().eContainer().getClass().toString();
+		Boolean notfindSource = true;
 		String nameTarget = arc.getTargetNode().getName();
+		String typeContainerTarget = arc.getTargetNode().eContainer().getClass().toString();
+		Boolean notfindTarget = true;
 		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
 		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
-		for(int i=0;i<listePlace.size();i++){
-			if(listePlace.get(i).getName().equals(nameSource)){
-				newArc.setSourceNode(listePlace.get(i));
-			}
-			if(listePlace.get(i).getName().equals(nameTarget)){
-				newArc.setTargetNode(listePlace.get(i));
+		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
+		
+		if(typeContainerSource.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) arc.getSourceNode().eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfindSource;i++){
+				/* trouve instance */
+				if(listeinstancenew.get(i).getName().equals(instance.getName())){
+					EList<RefPlace> listeRefPlace = instance.getRefPlaces();
+					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
+					for(int j=0;j<listeRefPlace.size()&&notfindSource;j++){
+						if(listeRefPlace.get(j).getName().equals(nameSource)){
+							newArc.setSourceNode((Node) listeRefPlace.get(j));
+							notfindSource = false;
+						}
+					}
+					for(int j=0;j<listeRefTransition.size()&&notfindSource;j++){
+						if(listeRefTransition.get(j).getName().equals(nameSource)){
+							newArc.setSourceNode((Node) listeRefTransition.get(i));
+							notfindSource = false;
+						}
+					}
+				}
 			}
 		}
-		for(int i=0;i<listeTransition.size();i++){
-			if(listeTransition.get(i).getName().equals(nameSource)){
-				newArc.setSourceNode(listeTransition.get(i));
+		else{
+			for(int i=0;i<listePlace.size()&&notfindSource;i++){
+				if(listePlace.get(i).getName().equals(nameSource)){
+					newArc.setSourceNode(listePlace.get(i));
+					notfindSource = false;
+				}
 			}
-			if(listeTransition.get(i).getName().equals(nameTarget)){
-				newArc.setTargetNode(listeTransition.get(i));
+			for(int i=0;i<listeTransition.size()&&notfindSource;i++){
+				if(listeTransition.get(i).getName().equals(nameSource)){
+					newArc.setSourceNode(listeTransition.get(i));
+					notfindSource = false;
+				}
+			}
+		}
+		
+		if(typeContainerTarget.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) arc.getTargetNode().eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfindTarget;i++){
+				/* trouve instance */
+				if(listeinstancenew.get(i).getName().equals(instance.getName())){
+					EList<RefPlace> listeRefPlace = instance.getRefPlaces();
+					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
+					for(int j=0;j<listeRefPlace.size()&&notfindTarget;j++){
+						if(listeRefPlace.get(j).getName().equals(nameTarget)){
+							newArc.setTargetNode((Node) listeRefPlace.get(j));
+							notfindTarget = false;
+						}
+					}
+					for(int j=0;j<listeRefTransition.size()&&notfindTarget;j++){
+						if(listeRefTransition.get(j).getName().equals(nameTarget)){
+							newArc.setTargetNode((Node) listeRefTransition.get(i));
+							notfindTarget = false;
+						}
+					}
+				}
+			}
+		}
+		else{
+			for(int i=0;i<listePlace.size()&&notfindTarget;i++){
+				if(listePlace.get(i).getName().equals(nameTarget)){
+					newArc.setTargetNode(listePlace.get(i));
+					notfindTarget = false;
+				}
+			}
+			for(int i=0;i<listeTransition.size()&&notfindTarget;i++){
+				if(listeTransition.get(i).getName().equals(nameTarget)){
+					newArc.setTargetNode(listeTransition.get(i));
+					notfindTarget = false;
+				}
 			}
 		}
 	}
 	
+
 	private void setField(field.Connection newconnection, hilecopComponent.BasicConnection connection){
 		String nameInput = connection.getSourceField().getName();
+		String typecontainerInput = connection.getSourceField().eContainer().getClass().toString();
 		Boolean notfindInput = true;
 		String nameOutput = connection.getTargetField().getName();
+		String typecontainerOutput = connection.getTargetField().eContainer().getClass().toString();
 		Boolean notfindOutput = true;
 		EList<field.Field> listefield = newroot.getComponent().getFields();
-		for(int i=0;i<listefield.size()&&(notfindInput||notfindOutput);i++){
-			if(listefield.get(i).getName().equals(nameInput)&&notfindInput){
-				newconnection.setInputField(listefield.get(i));
+		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
+
+		/* pour sourcefield */
+		if(typecontainerInput.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) connection.getSourceField().eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfindInput;i++){
+				/* trouve instance */
+				if(listeinstancenew.get(i).getName().equals(instance.getName())){
+					EList<Field> listeInstanceField = listeinstancenew.get(i).getFields();
+					/* trouve field */
+					for(int j=0;j<listeInstanceField.size();j++){
+						if(listeInstanceField.get(j).getName().equals(nameInput)){
+							newconnection.setInputField(listeInstanceField.get(j));
+							notfindInput = false;
+						}
+					}
+				}
 			}
-			if(listefield.get(i).getName().equals(nameOutput)&&notfindOutput){
-				newconnection.setOutputField(listefield.get(i));
+		}
+		else{
+			for(int i=0;i<listefield.size()&&notfindInput;i++){
+				if(listefield.get(i).getName().equals(nameInput)&&notfindInput){
+					newconnection.setInputField(listefield.get(i));
+				}
+			}
+		}
+
+		if(typecontainerOutput.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) connection.getTargetField().eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfindOutput;i++){
+				/* trouve instance */
+				if(listeinstancenew.get(i).getName().equals(instance.getName())){
+					EList<Field> listeInstanceField = listeinstancenew.get(i).getFields();
+					/* trouve field */
+					for(int j=0;j<listeInstanceField.size();j++){
+						if(listeInstanceField.get(j).getName().equals(nameOutput)){
+							newconnection.setOutputField(listeInstanceField.get(j));
+							notfindOutput = false;
+						}
+					}
+				}
+			}
+		}
+		else{
+			for(int i=0;i<listefield.size()&&notfindOutput;i++){
+				if(listefield.get(i).getName().equals(nameOutput)&&notfindOutput){
+					newconnection.setOutputField(listefield.get(i));
+				}
 			}
 		}
 	}

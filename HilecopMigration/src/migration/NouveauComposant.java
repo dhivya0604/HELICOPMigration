@@ -114,7 +114,6 @@ public class NouveauComposant {
 		return listeTransition;
 	}
 
-
 	/**
 	 *  sauvegarder le fichier
 	 * @throws IOException 
