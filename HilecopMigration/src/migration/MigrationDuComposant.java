@@ -546,149 +546,99 @@ public class MigrationDuComposant {
 	}
 
 	private void setNode(petriNet.Arc newArc, Arc arc){
-		String nameSource = arc.getSourceNode().getName();
-		String typeContainerSource = arc.getSourceNode().eContainer().getClass().toString();
-		Boolean notfindSource = true;
-		String nameTarget = arc.getTargetNode().getName();
-		String typeContainerTarget = arc.getTargetNode().eContainer().getClass().toString();
-		Boolean notfindTarget = true;
+		hilecopComponent.Node nodeSource = arc.getSourceNode();
+		hilecopComponent.Node nodeTarget = arc.getTargetNode();
+		newArc.setSourceNode(findNode(nodeSource));
+		newArc.setTargetNode(findNode(nodeTarget));
+	}
+	
+	private Node findNode(hilecopComponent.Node node){
+		String name = node.getName();
+		String typeContainer = node.eContainer().getClass().toString();
+		Boolean notfind = true;
+		Node newnode = null;
 		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
 		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
 		
-		if(typeContainerSource.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
-			ComponentInstance instance = (ComponentInstance) arc.getSourceNode().eContainer();
-			for(int i=0;i<listeinstancenew.size()&&notfindSource;i++){
+		if(typeContainer.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) node.eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */
 				if(listeinstancenew.get(i).getName().equals(instance.getName())){
 					EList<RefPlace> listeRefPlace = instance.getRefPlaces();
 					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
-					for(int j=0;j<listeRefPlace.size()&&notfindSource;j++){
-						if(listeRefPlace.get(j).getName().equals(nameSource)){
-							newArc.setSourceNode((Node) listeRefPlace.get(j));
-							notfindSource = false;
+					for(int j=0;j<listeRefPlace.size()&&notfind;j++){
+						if(listeRefPlace.get(j).getName().equals(name)){
+							newnode = (Node) listeRefPlace.get(j);
+							notfind = false;
 						}
 					}
-					for(int j=0;j<listeRefTransition.size()&&notfindSource;j++){
-						if(listeRefTransition.get(j).getName().equals(nameSource)){
-							newArc.setSourceNode((Node) listeRefTransition.get(i));
-							notfindSource = false;
+					for(int j=0;j<listeRefTransition.size()&&notfind;j++){
+						if(listeRefTransition.get(j).getName().equals(name)){
+							newnode = (Node) listeRefTransition.get(i);
+							notfind = false;
 						}
 					}
 				}
 			}
 		}
 		else{
-			for(int i=0;i<listePlace.size()&&notfindSource;i++){
-				if(listePlace.get(i).getName().equals(nameSource)){
-					newArc.setSourceNode(listePlace.get(i));
-					notfindSource = false;
+			for(int i=0;i<listePlace.size()&&notfind;i++){
+				if(listePlace.get(i).getName().equals(name)){
+					newnode = listePlace.get(i);
+					notfind = false;
 				}
 			}
-			for(int i=0;i<listeTransition.size()&&notfindSource;i++){
-				if(listeTransition.get(i).getName().equals(nameSource)){
-					newArc.setSourceNode(listeTransition.get(i));
-					notfindSource = false;
-				}
-			}
-		}
-		
-		if(typeContainerTarget.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
-			ComponentInstance instance = (ComponentInstance) arc.getTargetNode().eContainer();
-			for(int i=0;i<listeinstancenew.size()&&notfindTarget;i++){
-				/* trouve instance */
-				if(listeinstancenew.get(i).getName().equals(instance.getName())){
-					EList<RefPlace> listeRefPlace = instance.getRefPlaces();
-					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
-					for(int j=0;j<listeRefPlace.size()&&notfindTarget;j++){
-						if(listeRefPlace.get(j).getName().equals(nameTarget)){
-							newArc.setTargetNode((Node) listeRefPlace.get(j));
-							notfindTarget = false;
-						}
-					}
-					for(int j=0;j<listeRefTransition.size()&&notfindTarget;j++){
-						if(listeRefTransition.get(j).getName().equals(nameTarget)){
-							newArc.setTargetNode((Node) listeRefTransition.get(i));
-							notfindTarget = false;
-						}
-					}
+			for(int i=0;i<listeTransition.size()&&notfind;i++){
+				if(listeTransition.get(i).getName().equals(name)){
+					newnode = listeTransition.get(i);
+					notfind = false;
 				}
 			}
 		}
-		else{
-			for(int i=0;i<listePlace.size()&&notfindTarget;i++){
-				if(listePlace.get(i).getName().equals(nameTarget)){
-					newArc.setTargetNode(listePlace.get(i));
-					notfindTarget = false;
-				}
-			}
-			for(int i=0;i<listeTransition.size()&&notfindTarget;i++){
-				if(listeTransition.get(i).getName().equals(nameTarget)){
-					newArc.setTargetNode(listeTransition.get(i));
-					notfindTarget = false;
-				}
-			}
-		}
+		return newnode;
 	}
-	
 
 	private void setField(field.Connection newconnection, hilecopComponent.BasicConnection connection){
-		String nameInput = connection.getSourceField().getName();
-		String typecontainerInput = connection.getSourceField().eContainer().getClass().toString();
-		Boolean notfindInput = true;
-		String nameOutput = connection.getTargetField().getName();
-		String typecontainerOutput = connection.getTargetField().eContainer().getClass().toString();
-		Boolean notfindOutput = true;
+		hilecopComponent.Field fieldInput = connection.getSourceField();
+		hilecopComponent.Field fieldOutput = connection.getTargetField();
+		
+		newconnection.setInputField(findField(fieldInput));
+		newconnection.setOutputField(findField(fieldOutput));
+	}
+	
+	private Field findField(hilecopComponent.Field field){
+		String name = field.getName();
+		String typecontainer = field.eContainer().getClass().toString();
+		Boolean notfind = true;
+		Field newfield = null;
 		EList<field.Field> listefield = newroot.getComponent().getFields();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
 
-		/* pour sourcefield */
-		if(typecontainerInput.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
-			ComponentInstance instance = (ComponentInstance) connection.getSourceField().eContainer();
-			for(int i=0;i<listeinstancenew.size()&&notfindInput;i++){
+		if(typecontainer.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+			ComponentInstance instance = (ComponentInstance) field.eContainer();
+			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */
 				if(listeinstancenew.get(i).getName().equals(instance.getName())){
 					EList<Field> listeInstanceField = listeinstancenew.get(i).getFields();
 					/* trouve field */
 					for(int j=0;j<listeInstanceField.size();j++){
-						if(listeInstanceField.get(j).getName().equals(nameInput)){
-							newconnection.setInputField(listeInstanceField.get(j));
-							notfindInput = false;
+						if(listeInstanceField.get(j).getName().equals(name)){
+							newfield = listeInstanceField.get(j);
+							notfind = false;
 						}
 					}
 				}
 			}
 		}
 		else{
-			for(int i=0;i<listefield.size()&&notfindInput;i++){
-				if(listefield.get(i).getName().equals(nameInput)&&notfindInput){
-					newconnection.setInputField(listefield.get(i));
+			for(int i=0;i<listefield.size()&&notfind;i++){
+				if(listefield.get(i).getName().equals(name)&&notfind){
+					newfield = listefield.get(i);
 				}
 			}
 		}
-
-		if(typecontainerOutput.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
-			ComponentInstance instance = (ComponentInstance) connection.getTargetField().eContainer();
-			for(int i=0;i<listeinstancenew.size()&&notfindOutput;i++){
-				/* trouve instance */
-				if(listeinstancenew.get(i).getName().equals(instance.getName())){
-					EList<Field> listeInstanceField = listeinstancenew.get(i).getFields();
-					/* trouve field */
-					for(int j=0;j<listeInstanceField.size();j++){
-						if(listeInstanceField.get(j).getName().equals(nameOutput)){
-							newconnection.setOutputField(listeInstanceField.get(j));
-							notfindOutput = false;
-						}
-					}
-				}
-			}
-		}
-		else{
-			for(int i=0;i<listefield.size()&&notfindOutput;i++){
-				if(listefield.get(i).getName().equals(nameOutput)&&notfindOutput){
-					newconnection.setOutputField(listefield.get(i));
-				}
-			}
-		}
+		return newfield;
 	}
 }
