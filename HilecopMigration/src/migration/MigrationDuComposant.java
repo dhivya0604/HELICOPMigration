@@ -11,7 +11,10 @@ import field.SimpleConnection;
 import hilecopComponent.*;
 import hilecopComponent.Connection;
 import petriNet.Node;
+import petriNet.PNEntity;
 import petriNet.PetriNetFactory;
+import petriNet.Place;
+import root.HilecopComponent;
 import root.HilecopRoot;
 import root.RootFactory;
 import script.ScriptFactory;
@@ -116,10 +119,10 @@ public class MigrationDuComposant {
 	}
 
 	public void migrationBasicNode(){
-		ArrayList<Place> listePlace = origiprojet.getPlaces();
+		ArrayList<hilecopComponent.Place> listePlace = origiprojet.getPlaces();
 		System.out.println("Number of Place : " + listePlace.size());
 		for(int i=0;i<listePlace.size();i++){
-			Place place = listePlace.get(i);
+			hilecopComponent.Place place = listePlace.get(i);
 			newroot.getComponent().getPNStructureObjects().add(convertPlace(place));
 			System.out.println("Place " + (i+1) +" is migrated");
 		}
@@ -282,7 +285,7 @@ public class MigrationDuComposant {
 		return vhdlTime;
 	}
 
-	private petriNet.Place convertPlace(Place place){
+	private petriNet.Place convertPlace(hilecopComponent.Place place){
 		petriNet.Place newplace = PetriNetFactory.eINSTANCE.createPlace();
 		newplace.setName(place.getName());
 		newplace.setMarking(Integer.parseInt(place.getMarkupExpression()));
@@ -564,13 +567,11 @@ public class MigrationDuComposant {
 
 	private Node findNode(hilecopComponent.Node node){
 		String name = node.getName();
-		String typeContainer = node.eContainer().getClass().toString();
 		Boolean notfind = true;
 		Node newnode = null;
 		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
 		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
-		System.out.println(typeContainer);
 		
 		if(node.eContainer() instanceof ComponentInstance){
 			//System.out.println("This Node is in a Instance");
@@ -578,20 +579,22 @@ public class MigrationDuComposant {
 			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */
 				if(listeinstancenew.get(i).getName().equals(instance.getName())){
-					EList<RefPlace> listeRefPlace = instance.getRefPlaces();
-					EList<RefTransition> listeRefTransition = instance.getRefTransitions();
-					for(int j=0;j<listeRefPlace.size()&&notfind;j++){
-						if(listeRefPlace.get(j).getName().equals(name)){
-							System.out.println(listeRefPlace.get(j).getName());
-							newnode = (Node) listeRefPlace.get(j);
-							notfind = false;
+					HilecopComponent instancenew = listeinstancenew.get(i);
+					EList<petriNet.PNEntity> pn = instancenew.getPNStructureObjects();
+					for(PNEntity e : pn){
+						if(e instanceof petriNet.RefPlace){
+							petriNet.RefPlace refplace =(petriNet.RefPlace) e;
+							if(refplace.getName().equals(name)){
+								newnode = (Node) refplace;
+								notfind = false;
+							}
 						}
-					}
-					for(int j=0;j<listeRefTransition.size()&&notfind;j++){
-						if(listeRefTransition.get(j).getName().equals(name)){
-							System.out.println(listeRefTransition.get(j).getName());
-							newnode = (Node) listeRefTransition.get(i);
-							notfind = false;
+						if(e instanceof petriNet.RefTransition){
+							petriNet.RefTransition reftransition =(petriNet.RefTransition) e;
+							if(reftransition.getName().equals(name)){
+								newnode = (Node) reftransition;
+								notfind = false;
+							}
 						}
 					}
 				}
@@ -656,6 +659,7 @@ public class MigrationDuComposant {
 			for(int i=0;i<listefield.size()&&notfind;i++){
 				if(listefield.get(i).getName().equals(name)&&notfind){
 					newfield = listefield.get(i);
+					notfind = false;
 				}
 			}
 		}
