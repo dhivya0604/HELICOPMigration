@@ -248,8 +248,13 @@ frame.getContentPane().add(scroll);
 		}
 		else{
 			String locate = text2.getText();
-			MigrationDuProjet migprojet = new MigrationDuProjet(listeFichier,locate);
-			migprojet.migrationHILECOP();
+			/**
+			 * TODO mieux structurer l'utilisation de f
+			 */
+			ArrayList<File> liste_vhd = f.getVhd();
+			ArrayList<File> liste_hilecopcomponent = f.getHilecopComponent();
+			MigrationDuProjet migprojet = new MigrationDuProjet(locate);
+			migprojet.migrationHILECOP(liste_vhd,liste_hilecopcomponent);
 			JOptionPane.showMessageDialog(null,"migration is done!");
 		}
 	}
