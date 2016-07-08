@@ -13,7 +13,6 @@ import hilecopComponent.Connection;
 import petriNet.Node;
 import petriNet.PNEntity;
 import petriNet.PetriNetFactory;
-import petriNet.Place;
 import root.HilecopComponent;
 import root.HilecopRoot;
 import root.RootFactory;
@@ -311,17 +310,17 @@ public class MigrationDuComposant {
 		 * TODO if null
 		 */
 		if(refplace.getPlace()!=null){
-		String placename = refplace.getPlace().getName();
-		Boolean notfind = true;
-		for(int i=0;i<listeplace.size();i++){
-			if(listeplace.get(i).getName().equals(placename)){
-				newrefplace.setPlace(listeplace.get(i));
-				notfind = false;
+			String placename = refplace.getPlace().getName();
+			Boolean notfind = true;
+			for(int i=0;i<listeplace.size();i++){
+				if(listeplace.get(i).getName().equals(placename)){
+					newrefplace.setPlace(listeplace.get(i));
+					notfind = false;
+				}
 			}
-		}
-		if(notfind){
-			System.out.println("Error : Can't find Place "+ placename);
-		}
+			if(notfind){
+				System.out.println("Error : Can't find Place "+ placename);
+			}
 		}
 		return newrefplace;
 	}
@@ -367,17 +366,17 @@ public class MigrationDuComposant {
 		 * TODO ifnot
 		 */
 		if(reftransition.getTransition()!=null){
-		String transitionname = reftransition.getTransition().getName();
-		Boolean notfind = true;
-		for(int i=0;i<listetransition.size();i++){
-			if(listetransition.get(i).getName().equals(transitionname)){
-				newreftransition.setTransition(listetransition.get(i));
-				notfind = false;
+			String transitionname = reftransition.getTransition().getName();
+			Boolean notfind = true;
+			for(int i=0;i<listetransition.size();i++){
+				if(listetransition.get(i).getName().equals(transitionname)){
+					newreftransition.setTransition(listetransition.get(i));
+					notfind = false;
+				}
 			}
-		}
-		if(notfind){
-			System.out.println("Error : Can't find transition "+ transitionname);
-		}
+			if(notfind){
+				System.out.println("Error : Can't find transition "+ transitionname);
+			}
 		}
 		return newreftransition;
 	}
@@ -582,7 +581,7 @@ public class MigrationDuComposant {
 		ArrayList<petriNet.Place> listePlace = newprojet.getPlaces();
 		ArrayList<petriNet.Transition> listeTransition = newprojet.getTransitions();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
-		
+
 		if(node.eContainer() instanceof ComponentInstance){
 			//System.out.println("This Node is in a Instance");
 			ComponentInstance instance = (ComponentInstance) node.eContainer();
@@ -633,12 +632,17 @@ public class MigrationDuComposant {
 	private void setField(field.Connection newconnection, hilecopComponent.BasicConnection connection){
 		hilecopComponent.Field fieldInput = connection.getSourceField();
 		hilecopComponent.Field fieldOutput = connection.getTargetField();
-		if((findField(fieldInput)!=null)&&(findField(fieldOutput)!=null)){
-			newconnection.setInputField(findField(fieldInput));
-			newconnection.setOutputField(findField(fieldOutput));
+		if(fieldInput!=null&&fieldOutput!=null){
+			if((findField(fieldInput)!=null)&&(findField(fieldOutput)!=null)){
+				newconnection.setInputField(findField(fieldInput));
+				newconnection.setOutputField(findField(fieldOutput));
+			}
+			else{
+				System.out.println("Error : Can not find Field for connection " + connection.getId());
+			}
 		}
 		else{
-			System.out.println("Error : Can not find Field for connection " + connection.getId());
+			System.out.println("Error : Connection " + connection.getId() + " has a null field");
 		}
 	}
 

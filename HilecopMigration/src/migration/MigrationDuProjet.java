@@ -57,7 +57,10 @@ public class MigrationDuProjet {
 		@SuppressWarnings("resource")
 		InputStream is = new FileInputStream (path1);
 		OutputStream os=null;
-		String filename = path2 + "\\" + name + ".script_vhd";
+		if(name.startsWith(".")){
+			name = name.substring(1);
+		}
+		String filename = path2 + "\\" + name.replaceAll(".vhd", ".script_vhd");
 		File file = new File(filename);
 		file.createNewFile();
 		try{
