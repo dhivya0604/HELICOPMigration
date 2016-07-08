@@ -188,13 +188,13 @@ public class MigrationDuComposant {
 	public void migrationConnection(){
 		EList<Connection> listeconnection = origiprojet.getConnections();
 		System.out.println("Number of Connection : "+listeconnection.size());
-		for(int i=0;i<listeconnection.size();i++){
-			if(listeconnection.get(i).getClass().toString().equals("class hilecopComponent.impl.SimpleConnectionImpl")){
-				hilecopComponent.SimpleConnection sconnection = (hilecopComponent.SimpleConnection) listeconnection.get(i);
+		for(Connection c : listeconnection){
+			if(c instanceof hilecopComponent.SimpleConnection){
+				hilecopComponent.SimpleConnection sconnection = (hilecopComponent.SimpleConnection)c;
 				newroot.getComponent().getConnections().add(convertSimpleConnection(sconnection));
 			}
-			if(listeconnection.get(i).getClass().toString().equals("class hilecopComponent.impl.FusionConnectionImpl")){
-				hilecopComponent.FusionConnection sconnection = (hilecopComponent.FusionConnection) listeconnection.get(i);
+			if(c instanceof hilecopComponent.FusionConnection){
+				hilecopComponent.FusionConnection sconnection = (hilecopComponent.FusionConnection)c;
 				newroot.getComponent().getConnections().add(convertFusionConnection(sconnection));
 			}
 		}
@@ -323,23 +323,22 @@ public class MigrationDuComposant {
 		newtransition.setName(transition.getName());
 		int nbtime = 0;
 		EList<PNEntityInterpretation> listeInterpretation = transition.getInterpretation();
-		for(int i=0;i<listeInterpretation.size();i++){
-			String interpretationtype = listeInterpretation.get(i).getClass().toString();
-			if(interpretationtype.equals("class hilecopComponent.impl.ConditionImpl"))
+		for(PNEntityInterpretation e : listeInterpretation){
+			if(e instanceof Condition)
 			{
-				Condition condition =  (Condition) listeInterpretation.get(i);
+				Condition condition =  (Condition)e;
 				setCondition(newtransition,condition);
 			}
-			if(interpretationtype.equals("class hilecopComponent.impl.FunctionImpl"))
+			if(e instanceof Function)
 			{
-				Function function =  (Function) listeInterpretation.get(i);
+				Function function =  (Function)e;
 				setFunction(newtransition,function);
 			}
-			if(interpretationtype.equals("class hilecopComponent.impl.TimeImpl")&&nbtime<2)
+			if((e instanceof Time)&&nbtime<2)
 			{
 				nbtime = nbtime+1;
 				if(nbtime==1){
-					Time time =  (Time) listeInterpretation.get(i);
+					Time time =  (Time)e;
 					setTime(newtransition,time);
 				}
 				else{
@@ -573,7 +572,7 @@ public class MigrationDuComposant {
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
 		System.out.println(typeContainer);
 		
-		if(typeContainer.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+		if(node.eContainer() instanceof ComponentInstance){
 			//System.out.println("This Node is in a Instance");
 			ComponentInstance instance = (ComponentInstance) node.eContainer();
 			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
@@ -632,13 +631,12 @@ public class MigrationDuComposant {
 
 	private Field findField(hilecopComponent.Field field){
 		String name = field.getName();
-		String typecontainer = field.eContainer().getClass().toString();
 		Boolean notfind = true;
 		Field newfield = null;
 		EList<field.Field> listefield = newroot.getComponent().getFields();
 		EList<root.ComponentInstance> listeinstancenew = newroot.getComponent().getComponentInstances();
 
-		if(typecontainer.equals("class hilecopComponent.impl.ComponentInstanceImpl")){
+		if(field.eContainer() instanceof ComponentInstance){
 			ComponentInstance instance = (ComponentInstance) field.eContainer();
 			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */

@@ -14,6 +14,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import petriNet.PNEntity;
+import petriNet.Place;
+import petriNet.Transition;
 import root.*;
 import script.VHDLAction;
 import script.VHDLCondition;
@@ -52,9 +55,9 @@ public class NouveauComposant {
 	public ArrayList<VHDLAction> getVHDLActions(){
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLAction> listeAction = new ArrayList<VHDLAction>();
-		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLActionImpl")){
-				listeAction.add((VHDLAction) listeVHDL.get(i));
+		for(VHDLElement e: listeVHDL){
+			if(e instanceof VHDLAction){
+				listeAction.add((VHDLAction)e);
 			}
 		}
 		return listeAction;
@@ -63,9 +66,9 @@ public class NouveauComposant {
 	public ArrayList<VHDLCondition> getVHDLConditions(){
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLCondition> listeCondition = new ArrayList<VHDLCondition>();
-		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLConditionImpl")){
-				listeCondition.add((VHDLCondition) listeVHDL.get(i));
+		for(VHDLElement e: listeVHDL){
+			if(e instanceof VHDLCondition){
+				listeCondition.add((VHDLCondition)e);
 			}
 		}
 		return listeCondition;
@@ -74,9 +77,9 @@ public class NouveauComposant {
 	public ArrayList<VHDLFunction> getVHDLFunctions(){
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLFunction> listeFunction = new ArrayList<VHDLFunction>();
-		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLFunctionImpl")){
-				listeFunction.add((VHDLFunction) listeVHDL.get(i));
+		for(VHDLElement e: listeVHDL){
+			if(e instanceof VHDLFunction){
+				listeFunction.add((VHDLFunction)e);
 			}
 		}
 		return listeFunction;
@@ -85,9 +88,9 @@ public class NouveauComposant {
 	public ArrayList<VHDLTime> getVHDLTimes(){
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLTime> listeTime = new ArrayList<VHDLTime>();
-		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLTimeImpl")){
-				listeTime.add((VHDLTime) listeVHDL.get(i));
+		for(VHDLElement e: listeVHDL){
+			if(e instanceof VHDLTime){
+				listeTime.add((VHDLTime)e);
 			}
 		}
 		return listeTime;
@@ -95,9 +98,9 @@ public class NouveauComposant {
 	public ArrayList<petriNet.Place> getPlaces(){
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Place> listeplace = new ArrayList<petriNet.Place>();
-		for(int i=0;i<pn.size();i++){
-			if(pn.get(i).getClass().toString().equals("class petriNet.impl.PlaceImpl")){
-				listeplace.add((petriNet.Place) pn.get(i));
+		for(PNEntity e : pn){
+			if(e instanceof Place){
+				listeplace.add((Place) e);
 			}
 		}
 		return listeplace;
@@ -106,9 +109,9 @@ public class NouveauComposant {
 	public ArrayList<petriNet.Transition> getTransitions(){
 		EList<petriNet.PNEntity> pn = newroot.getComponent().getPNStructureObjects();
 		ArrayList<petriNet.Transition> listeTransition = new ArrayList<petriNet.Transition>();
-		for(int i=0;i<pn.size();i++){
-			if(pn.get(i).getClass().toString().equals("class petriNet.impl.TransitionImpl")){
-				listeTransition.add((petriNet.Transition) pn.get(i));
+		for(PNEntity e : pn){
+			if(e instanceof Transition){
+				listeTransition.add((petriNet.Transition)e);
 			}
 		}
 		return listeTransition;

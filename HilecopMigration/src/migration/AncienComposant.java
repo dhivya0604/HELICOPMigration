@@ -68,24 +68,24 @@ public class AncienComposant {
 		listeInhibitorArc = new ArrayList<InhibitorArc>();
 		listeFusionArc = new ArrayList<FusionArc>();
 		
-		for(int i=0;i<listePNEntity.size();i++){
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.PlaceImpl")){
-				listePlace.add((Place)listePNEntity.get(i));
+		for(PNEntity e : listePNEntity){
+			if(e instanceof Place){
+				listePlace.add((Place)e);
 			}
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.TransitionImpl")){
-				listeTransition.add((Transition) listePNEntity.get(i));
+			if(e instanceof Transition){
+				listeTransition.add((Transition)e);
 			}
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.BasicArcImpl")){
-				listeBasicArc.add((BasicArc) listePNEntity.get(i));
+			if(e instanceof BasicArc){
+				listeBasicArc.add((BasicArc)e);
 			}
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.TestArcImpl")){
-				listeTestArc.add((TestArc) listePNEntity.get(i));
+			if(e instanceof TestArc){
+				listeTestArc.add((TestArc)e);
 			}
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.InhibitorArcImpl")){
-				listeInhibitorArc.add((InhibitorArc) listePNEntity.get(i));
+			if(e instanceof InhibitorArc){
+				listeInhibitorArc.add((InhibitorArc)e);
 			}
-			if(listePNEntity.get(i).getClass().toString().equals("class hilecopComponent.impl.FusionArcImpl")){
-				listeFusionArc.add((FusionArc) listePNEntity.get(i));
+			if(e instanceof FusionArc){
+				listeFusionArc.add((FusionArc)e);
 			}
 		}
 	}
@@ -107,10 +107,9 @@ public class AncienComposant {
 	public ArrayList<Constant> getConstants(){
 		EList<BehaviourField> listeField = designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields();
 		ArrayList<Constant> listeConstant = new ArrayList<Constant>();
-		for(int i=0;i<listeField.size();i++){
-			if(listeField.get(i).getClass().toString().equals("class hilecopComponent.impl.ConstantImpl")){
-				Constant constant = (Constant)designfile.getHilecopComponent().getComponentBehaviour().getPrivateFields().get(i);
-				listeConstant.add(constant);
+		for(BehaviourField e : listeField){
+			if(e instanceof Constant){
+				listeConstant.add((Constant) e);
 			}
 		}
 		return listeConstant;
