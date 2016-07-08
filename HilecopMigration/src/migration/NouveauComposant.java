@@ -53,7 +53,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLAction> listeAction = new ArrayList<VHDLAction>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.PNActionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLActionImpl")){
 				listeAction.add((VHDLAction) listeVHDL.get(i));
 			}
 		}
@@ -64,7 +64,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLCondition> listeCondition = new ArrayList<VHDLCondition>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLConditionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLConditionImpl")){
 				listeCondition.add((VHDLCondition) listeVHDL.get(i));
 			}
 		}
@@ -75,7 +75,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLFunction> listeFunction = new ArrayList<VHDLFunction>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLFunctionImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLFunctionImpl")){
 				listeFunction.add((VHDLFunction) listeVHDL.get(i));
 			}
 		}
@@ -86,7 +86,7 @@ public class NouveauComposant {
 		EList<VHDLElement> listeVHDL = newroot.getComponent().getVHDLElements();
 		ArrayList<VHDLTime> listeTime = new ArrayList<VHDLTime>();
 		for(int i=0;i<listeVHDL.size();i++){
-			if(listeVHDL.get(i).getClass().toString().equals("class petriNet.impl.VHDLTimeImpl")){
+			if(listeVHDL.get(i).getClass().toString().equals("class script.impl.VHDLTimeImpl")){
 				listeTime.add((VHDLTime) listeVHDL.get(i));
 			}
 		}
