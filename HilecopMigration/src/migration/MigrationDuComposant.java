@@ -307,6 +307,10 @@ public class MigrationDuComposant {
 		setRefPlaceMode(newrefplace, refplace);
 		//check refplace.place exist ou pas
 		ArrayList<petriNet.Place> listeplace = newprojet.getPlaces();
+		/**
+		 * TODO if null
+		 */
+		if(refplace.getPlace()!=null){
 		String placename = refplace.getPlace().getName();
 		Boolean notfind = true;
 		for(int i=0;i<listeplace.size();i++){
@@ -317,6 +321,7 @@ public class MigrationDuComposant {
 		}
 		if(notfind){
 			System.out.println("Error : Can't find Place "+ placename);
+		}
 		}
 		return newrefplace;
 	}
@@ -358,6 +363,10 @@ public class MigrationDuComposant {
 		setRefTransitionMode(newreftransition, reftransition);		
 		//check reftransition.transition exist ou pas
 		ArrayList<petriNet.Transition> listetransition = newprojet.getTransitions();
+		/**
+		 * TODO ifnot
+		 */
+		if(reftransition.getTransition()!=null){
 		String transitionname = reftransition.getTransition().getName();
 		Boolean notfind = true;
 		for(int i=0;i<listetransition.size();i++){
@@ -368,6 +377,7 @@ public class MigrationDuComposant {
 		}
 		if(notfind){
 			System.out.println("Error : Can't find transition "+ transitionname);
+		}
 		}
 		return newreftransition;
 	}
@@ -644,12 +654,15 @@ public class MigrationDuComposant {
 			for(int i=0;i<listeinstancenew.size()&&notfind;i++){
 				/* trouve instance */
 				if(listeinstancenew.get(i).getName().equals(instance.getName())){
-					EList<Field> listeInstanceField = listeinstancenew.get(i).getFields();
-					/* trouve field */
-					for(int j=0;j<listeInstanceField.size();j++){
-						if(listeInstanceField.get(j).getName().equals(name)){
-							newfield = listeInstanceField.get(j);
-							notfind = false;
+					HilecopComponent instancenew = listeinstancenew.get(i);
+					EList<Field> listeinstancefield = instancenew.getFields();
+					for(Field e : listeinstancefield){
+						if(e instanceof field.VHDLPort){
+							field.VHDLPort port =(VHDLPort) e;
+							if(port.getName().equals(name)){
+								newfield =port;
+								notfind = false;
+							}
 						}
 					}
 				}
