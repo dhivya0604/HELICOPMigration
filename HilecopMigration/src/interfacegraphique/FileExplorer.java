@@ -15,10 +15,14 @@ import java.util.ArrayList;
 public class FileExplorer{
 
 	private ArrayList<File> liste_fichiers;
+	private ArrayList<File> liste_hilecopcomponent;
+	private ArrayList<File> liste_vhd;
 
 	public FileExplorer()
 	{
 		liste_fichiers = new ArrayList<File>();
+		liste_hilecopcomponent = new ArrayList<File>();
+		liste_vhd = new ArrayList<File>();
 	}
 
 	
@@ -51,6 +55,10 @@ public class FileExplorer{
 									if(Lfiles[k].getName().endsWith(".hilecopcomponent") && !(Lfiles[k].getName().equals(".metadata") )){
 										System.out.println(Lfiles[k].getAbsolutePath());
 										liste_fichiers.add(Lfiles[k]);	
+										liste_hilecopcomponent.add(Lfiles[k]);
+									}
+									if(Lfiles[k].getName().endsWith(".vhd") && !(Lfiles[k].getName().equals(".metadata") )){
+										liste_vhd.add(Lfiles[k]);
 									}
 								}
 							}
@@ -62,53 +70,13 @@ public class FileExplorer{
 		return liste_fichiers;
 	}
 	
+	public ArrayList<File> getHilecopComponent(){
+		return liste_hilecopcomponent;
+	}
 	
-	/*public void parcours(String path)
-	{
-
-	File file=new File (path);
-		File[] Lrep=file.listFiles();
-
-	//	DefaultMutableTreeNode noeud;
-
-			for(int i=0;i<Lrep.length;i++)
-			{//noeud= new DefaultMutableTreeNode(Lrep[i].getName());
-
-			if(Lrep[i].isDirectory()==true)
-				{ 						System.out.println("repertoire"+Lrep[i].getName());
-						//System.out.println("noeud"+noeud);
-						//root.add(noeud);
-						parcours(Lrep[i].getAbsolutePath());
-						//DefaultMutableTreeNode noeud1=new DefaultMutableTreeNode(Lrep[i].getName());
-						//noeud.add(noeud);
-
-						int j=0;
-						 File[] Lfiles=Lrep[i].listFiles();
-						 if(Lfiles!=null){
-
-							 for(j=0;j<Lfiles.length;j++){
-							 {if(Lfiles[j].getName().contains(".project")==true)
-							 	{
-								 	System.out.println("fichier"+Lfiles[j].getName());
-								 	//noeud.add(new DefaultMutableTreeNode(Lfiles[j].getName()));
-
-							 	}
-							// }
-
-						 }
-					}
-				}
-			if(i==Lrep.length-3)
-			{
-				tree=new JTree(root);
-				p1.add(tree);
-				f.add(p1);
-				f.setBounds(100, 100, 446, 351);
-				f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				f.setVisible(true);
-			}
-		}}
-	}*/
+	public ArrayList<File> getVhd(){
+		return liste_vhd;
+	}
 
 	private boolean test_projet_hilecop(File file) {
 		BufferedReader reader;
